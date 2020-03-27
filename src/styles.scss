@@ -1,56 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-@font-face {
-  font-family: 'ManulifeJHSans';
-  src: url('/assets/fonts/ManulifeJHSans-Bold.eot');
-  src: url('/assets/fonts/ManulifeJHSans-Bold.eot?#iefix')
-  format('embedded-opentype'),
-  url('/assets/fonts/ManulifeJHSans-Bold.woff2') format('woff2'),
-  url('/assets/fonts/ManulifeJHSans-Bold.woff') format('woff');
-  font-style: normal;
-  font-weight: 700;
-}
-@font-face {
-  font-family: 'ManulifeJHSans';
-  src: url('/assets/fonts/ManulifeJHSans-Demibold.eot');
-  src: url('/assets/fonts/ManulifeJHSans-Demibold.eot?#iefix')
-  format('embedded-opentype'),
-  url('/assets/fonts/ManulifeJHSans-Demibold.woff2') format('woff2'),
-  url('/assets/fonts/ManulifeJHSans-Demibold.woff') format('woff');
-  font-weight: 600;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'ManulifeJHSans';
-  src: url('/assets/fonts/ManulifeJHSans-Light.eot');
-  src: url('/assets/fonts/ManulifeJHSans-Light.eot?#iefix')
-  format('embedded-opentype'),
-  url('/assets/fonts/ManulifeJHSans-Light.woff2') format('woff2'),
-  url('/assets/fonts/ManulifeJHSans-Light.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'ManulifeJHSans';
-  src: url('/assets/fonts/ManulifeJHSans-Regular.eot');
-  src: url('/assets/fonts/ManulifeJHSans-Regular.eot?#iefix')
-  format('embedded-opentype'),
-  url('/assets/fonts/ManulifeJHSans-Regular.woff2') format('woff2'),
-  url('/assets/fonts/ManulifeJHSans-Regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'ManulifeJHSans';
-  src: url('/assets/fonts/ManulifeJHSerif-Italic.eot');
-  src: url('/assets/fonts/ManulifeJHSerif-Italic.eot?#iefix')
-  format('embedded-opentype'),
-  url('/assets/fonts/ManulifeJHSerif-Italic.woff2') format('woff2'),
-  url('/assets/fonts/ManulifeJHSerif-Italic.woff') format('woff');
-  font-weight: normal;
-  font-style: italic;
-}
 html[lang='en'] * {
-  font-family: 'ManulifeJHSans';
+  font-family: sans-serif;
 }
 .chart-label-text {
   font-size: 13px;
