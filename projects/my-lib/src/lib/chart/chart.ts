@@ -515,7 +515,6 @@ export class RoseChart {
         return;
       }
     } else if (this.renderMode === 'svg') {
-      console.log('click');
       const target = e.target as HTMLElement;
       if (target.tagName === 'path') {
         const index = target.getAttribute('data-index');
