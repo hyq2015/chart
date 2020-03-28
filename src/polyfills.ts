@@ -53,23 +53,23 @@ import 'web-animations-js'; // Run `npm install --save web-animations-js`.
  */
 
 (function() {
-  Object.setPrototypeOf =
-    Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties);
+    Object.setPrototypeOf =
+        Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties);
 
-  function setProtoOf(obj, proto) {
-    obj.__proto__ = proto;
-    return obj;
-  }
-
-  function mixinProperties(obj, proto) {
-    for (const prop in proto) {
-      if (!obj.hasOwnProperty(prop)) {
-        obj[prop] = proto[prop];
-      }
+    function setProtoOf(obj, proto) {
+        obj.__proto__ = proto;
+        return obj;
     }
-    return obj;
-  }
+
+    function mixinProperties(obj, proto) {
+        for (const prop in proto) {
+            if (!obj.hasOwnProperty(prop)) {
+                obj[prop] = proto[prop];
+            }
+        }
+        return obj;
+    }
 })();
 import 'core-js/es/symbol';
 import 'core-js/es/object';
@@ -104,6 +104,3 @@ import 'babel-polyfill';
  */
 import 'zone.js/dist/zone'; // Included with Angular CLI.
 
-/***************************************************************************************************
- * APPLICATION IMPORTS
- */
