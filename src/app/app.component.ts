@@ -172,7 +172,7 @@ export class AppComponent  implements OnInit , AfterViewInit{
   };
   option4: ChartOption = {
     id: 'can-outer4',
-    radius: [35],
+    radius: [55],
     tooltipCLass: 'tool-tip',
     autoHide: false,
     series: [
