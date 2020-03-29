@@ -173,6 +173,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
   option4: ChartOption = {
     id: 'can-outer4',
     radius: [35],
+    tooltipCLass: 'tool-tip',
+    autoHide: false,
     series: [
       {
         color: '#00a758',
@@ -222,20 +224,11 @@ export class AppComponent  implements OnInit , AfterViewInit{
       {
         color: '#ff7769',
         highLightColor: '#ff7769',
-        value: 14,
+        value: 10,
         thickness: 34,
         indicateTxt:
           '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
           'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">14%</span></div>',
-      },
-      {
-        color: '#8e90a2',
-        highLightColor: '#8e90a2',
-        value: 10,
-        thickness: 38,
-        indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
       }
     ]
   };

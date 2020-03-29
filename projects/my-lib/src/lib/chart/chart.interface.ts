@@ -23,6 +23,13 @@ export interface ProdSerial extends SingleSerial {
   indicatorPointX2?: number;
   indicatorPointY1?: number;
   indicatorPointY2?: number;
+  leftSide?: boolean;
+  rightSide?: boolean;
+  top?: number;
+  bottom?: number;
+  height?: number;
+  left?: number | string;
+  right?: number | string;
 }
 export interface XPoint {
   x1: number;
@@ -52,6 +59,8 @@ export interface ChartOption {
   offsetX?: number;
   offsetY?: number;
   renderMode?: 'svg' | 'canvas';
+  tooltipCLass?: string;
+  autoHide?: boolean;
 }
 
 export interface ProdChartOption extends ChartOption {

@@ -11,7 +11,7 @@ const defaultSerialConfig = {
   thickness: 40,
   indicatorPercent: 0.5,
   indicatorOffset: 0,
-  indicatorLength: 40,
+  indicatorLength: 24,
   indicatorOffsetAngle: 0
 };
 export class RoseChart {
@@ -42,6 +42,7 @@ export class RoseChart {
   public prodOption: ProdChartOption;
   private option: ChartOption;
   private renderMode = 'svg';
+  private tooltips: HTMLElement[] = [];
   constructor(opt: ChartOption) {
     this.option = opt;
   }
@@ -234,7 +235,6 @@ export class RoseChart {
     } else if (this.renderMode === 'svg') {
       if (this.hoverScale > 1) {
         const params = this.calculateParams(drawEntity);
-        // TODO
         const largeArcFlag = drawEntity.angleScope < Math.PI ? 0 : 1;
         if (isSvg) {
           this.prevSvg.setAttribute('d', `M ${params.centerX} ${params.centerY}
@@ -278,70 +278,75 @@ export class RoseChart {
     for (const item of this.series) {
       if (item.indicateTxt && item.showIndicate) {
         const tooltipDiv = document.createElement('div');
-        tooltipDiv.style.cssText += `position:absolute;top:${item.indicatorPointY2}px;`;
+        tooltipDiv.className = `rose-chart-tooltip ${this.option.tooltipCLass}`;
+        let topVal = item.indicatorPointY2;
+        let leftVal: number| string = 'auto';
+        let rightVal: number| string = 'auto';
         if (item.indicatorPointX2 > this.centerX) {
           if (this.defaultOffset) {
-            tooltipDiv.style.cssText += `left:${item.indicatorPointX2 +
-              10 +
-              (item.indicateOffsetX || 0)}px;`;
+            leftVal = item.indicatorPointX2 + 10 + (item.indicateOffsetX || 0);
           } else {
-            tooltipDiv.style.cssText += `left:${item.indicatorPointX2 +
-              (item.indicateOffsetX || 0)}px;`;
+            leftVal = item.indicatorPointX2 + (item.indicateOffsetX || 0);
           }
         } else {
           if (this.defaultOffset) {
-            tooltipDiv.style.cssText += `right:${this.width -
-              item.indicatorPointX2 +
-              10 -
-              (item.indicateOffsetX || 0)}px;`;
+            rightVal = this.width - item.indicatorPointX2 + 10 - (item.indicateOffsetX || 0);
           } else {
-            tooltipDiv.style.cssText += `right:${this.width -
-              item.indicatorPointX2 -
-              (item.indicateOffsetX || 0)}px;`;
+            rightVal = this.width - item.indicatorPointX2 - (item.indicateOffsetX || 0);
           }
         }
         if (item.indicatorPointY2 < this.centerY) {
           if (this.defaultOffset) {
-            tooltipDiv.style.cssText += `top:${item.indicatorPointY2 -
-            10 +
-            (item.indicateOffsetY || 0)}px;`;
+            topVal = item.indicatorPointY2 - 10 +(item.indicateOffsetY || 0);
           } else {
-            tooltipDiv.style.cssText += `top:${item.indicatorPointY2 +
-              (item.indicateOffsetY || 0)}px;`;
+            topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
           }
         } else {
           if (this.defaultOffset) {
-            tooltipDiv.style.cssText += `top:${item.indicatorPointY2 -
-            8 +
-            (item.indicateOffsetY || 0)}px;`;
+            topVal = item.indicatorPointY2 - 8 + (item.indicateOffsetY || 0);
           } else {
-            tooltipDiv.style.cssText += `top:${item.indicatorPointY2 +
-              (item.indicateOffsetY || 0)}px;`;
+            topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
           }
         }
         if (Math.abs(Math.abs(item.indicatorAngle) - Math.PI / 2) <= Math.PI / 10) {
           if (item.indicatorPointY2 < this.centerY) {
-            tooltipDiv.style.cssText += `top:${item.indicatorPointY2 -
-            20 +
-            (item.indicateOffsetY || 0)}px;`;
+            topVal = item.indicatorPointY2 - 20 + (item.indicateOffsetY || 0);
           } else {
-            tooltipDiv.style.cssText += `top:${item.indicatorPointY2 +
-            1 +
-            (item.indicateOffsetY || 0)}px;`;
+            topVal = item.indicatorPointY2 + 1 + (item.indicateOffsetY || 0);
           }
           if (Math.abs(item.indicatorAngle) >= Math.PI / 2) {
-            tooltipDiv.style.cssText += `right:${this.width -
-            item.indicatorPointX2 - 4
-            -
-            (item.indicateOffsetX || 0)}px;`;
+            rightVal = this.width - item.indicatorPointX2 - 4 - (item.indicateOffsetX || 0);
           } else {
-            tooltipDiv.style.cssText += `left:${item.indicatorPointX2 +
-            1 +
-            (item.indicateOffsetX || 0)}px;`;
+            leftVal = item.indicatorPointX2 + 1 + (item.indicateOffsetX || 0);
           }
         }
+        tooltipDiv.style.cssText += `position:absolute;top:${topVal}px;left:${leftVal === 'auto' ? 'auto' : leftVal + 'px'};
+        right:${rightVal === 'auto' ? 'auto' : rightVal + 'px'};`;
         tooltipDiv.innerHTML = item.indicateTxt;
+        this.tooltips.push(tooltipDiv);
         this.containerDom.appendChild(tooltipDiv);
+        const h = tooltipDiv.offsetHeight;
+        item.leftSide = rightVal !== 'auto';
+        item.rightSide = leftVal !== 'auto';
+        item.left = leftVal;
+        item.right = rightVal;
+        item.top = topVal;
+        item.bottom = topVal + h;
+        item.height = h;
+      }
+    }
+    if (this.option.autoHide) {
+      for(let i = 0, len = this.series.length; i < len; i++) {
+        if ( i < len - 1) {
+          if (this.series[i].rightSide && this.series[i+1].rightSide && this.series[i].bottom >= this.series[i+1].top) {
+            this.tooltips[i].style.cssText += `max-height: ${this.series[i].height - this.series[i].bottom + this.series[i+1].top}px;overflow-y:scroll;`
+          } else if (this.series[i].leftSide && this.series[i+1].leftSide && this.series[i+1].bottom >= this.series[i].top) {
+            this.tooltips[i+1].style.cssText += `max-height: ${this.series[i+1].height - this.series[i+1].bottom + this.series[i].top}px;overflow-y:scroll;`
+          }
+        }
+        if (this.series[i].bottom > this.height) {
+          this.tooltips[i].style.cssText += `max-height: ${this.series[i].height - this.series[i].bottom + this.height}px;overflow-y:scroll;`;
+        }
       }
     }
   }
@@ -370,7 +375,7 @@ export class RoseChart {
       this.drawSvg();
     }
   }
-  createSvgEl(tag: string, attrs: any): any {
+     createSvgEl(tag: string, attrs: any): any {
     const svgOrg = 'http://www.w3.org/2000/svg';
     const linkNs = 'http://www.w3.org/1999/xlink';
     const ATTR_MAP = {
@@ -407,7 +412,9 @@ export class RoseChart {
     this.svg = this.createSvgEl('svg', {
       width: this.width,
       height: this.height,
-      viewBox: `0 0 ${this.width} ${this.height}`
+      viewBox: `0 0 ${this.width} ${this.height}`,
+      xmlns: 'http://www.w3.org/2000/svg',
+      'xmlns:xlink': 'http://www.w3.org/1999/xlink'
     });
     for (let i = 0, len = this.series.length; i < len; i++) {
       const item = this.series[i];
