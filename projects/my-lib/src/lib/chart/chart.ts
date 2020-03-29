@@ -42,6 +42,8 @@ export class RoseChart {
   public prodOption: ProdChartOption;
   private option: ChartOption;
   private renderMode = 'svg';
+  private linkNs = 'http://www.w3.org/1999/xlink';
+  private svgOrg = 'http://www.w3.org/2000/svg';
   private tooltips: HTMLElement[] = [];
   constructor(opt: ChartOption) {
     this.option = opt;
@@ -80,8 +82,7 @@ export class RoseChart {
     this.height = height;
     if (!this.containerDom) {
       this.containerDom = document.createElement('div');
-      this.containerDom.style.cssText += `position:relative;display:inline-block`;
-      this.containerDom.style.cssText += `width: ${width}px;height:${height}px;`;
+      this.containerDom.style.cssText += `position:relative;display:inline-block;width: ${width}px;height:${height}px;`;
     }
     this.centerX = width / 2 + (this.option.offsetX || 0);
     this.centerY = height / 2 + (this.option.offsetY || 0);
@@ -375,18 +376,16 @@ export class RoseChart {
       this.drawSvg();
     }
   }
-     createSvgEl(tag: string, attrs: any): any {
-    const svgOrg = 'http://www.w3.org/2000/svg';
-    const linkNs = 'http://www.w3.org/1999/xlink';
+  createSvgEl(tag: string, attrs: any): any {
     const ATTR_MAP = {
       className: 'class',
       svgHref: 'href'
     };
 
     const NS_MAP = {
-      svgHref: linkNs
+      svgHref: this.linkNs
     };
-    const d = document.createElementNS(svgOrg, tag);
+    const d = document.createElementNS(this.svgOrg, tag);
     Object.keys(attrs).forEach(attr => {
       const attName = (attr in ATTR_MAP ? ATTR_MAP[attr] : attr);
       const val = attrs[attr];
@@ -413,8 +412,8 @@ export class RoseChart {
       width: this.width,
       height: this.height,
       viewBox: `0 0 ${this.width} ${this.height}`,
-      xmlns: 'http://www.w3.org/2000/svg',
-      'xmlns:xlink': 'http://www.w3.org/1999/xlink'
+      xmlns: this.svgOrg,
+      'xmlns:xlink': this.linkNs
     });
     for (let i = 0, len = this.series.length; i < len; i++) {
       const item = this.series[i];
