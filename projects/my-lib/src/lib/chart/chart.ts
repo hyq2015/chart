@@ -40,11 +40,13 @@ export class RoseChart {
   private prevSvg: HTMLElement;
   private defaultOffset = true;
   public prodOption: ProdChartOption;
-  private option: ChartOption;
+  public option: ChartOption;
   private renderMode = 'svg';
   private linkNs = 'http://www.w3.org/1999/xlink';
   private svgOrg = 'http://www.w3.org/2000/svg';
   private tooltips: HTMLElement[] = [];
+  private debounceTimeout: any;
+  private lastTime: number;
   constructor(opt: ChartOption) {
     this.option = opt;
   }
@@ -54,6 +56,7 @@ export class RoseChart {
     this.create();
   }
   public update(op?: ChartOption) {
+    console.log('update');
     if (op) {
       this.option = op;
     }
@@ -82,8 +85,8 @@ export class RoseChart {
     this.height = height;
     if (!this.containerDom) {
       this.containerDom = document.createElement('div');
-      this.containerDom.style.cssText += `position:relative;display:inline-block;width: ${width}px;height:${height}px;`;
     }
+    this.containerDom.style.cssText += `position:relative;display:inline-block;width: ${width}px;height:${height}px;`;
     this.centerX = width / 2 + (this.option.offsetX || 0);
     this.centerY = height / 2 + (this.option.offsetY || 0);
     this.minRadius = this.prodOption.radius[0];
@@ -171,11 +174,11 @@ export class RoseChart {
       }
       series[i].indicatorPointX1 =
         (series[i].radius + series[i].indicatorOffset) *
-          Math.cos(series[i].indicatorAngle) +
+        Math.cos(series[i].indicatorAngle) +
         this.centerX;
       series[i].indicatorPointY1 =
         (series[i].radius + series[i].indicatorOffset) *
-          Math.sin(series[i].indicatorAngle) +
+        Math.sin(series[i].indicatorAngle) +
         this.centerY;
       series[i].indicatorPointX2 =
         series[i].indicatorLength * Math.cos(series[i].indicatorAngle) +
@@ -279,7 +282,7 @@ export class RoseChart {
     for (const item of this.series) {
       if (item.indicateTxt && item.showIndicate) {
         const tooltipDiv = document.createElement('div');
-        tooltipDiv.className = `rose-chart-tooltip ${this.option.tooltipCLass}`;
+        tooltipDiv.className = `rose-chart-tooltip ${this.option.tooltipClass || ''}`;
         let topVal = item.indicatorPointY2;
         let leftVal: number| string = 'auto';
         let rightVal: number| string = 'auto';
@@ -337,7 +340,7 @@ export class RoseChart {
       }
     }
     if (this.option.autoHide) {
-      for(let i = 0, len = this.series.length; i < len; i++) {
+      for (let i = 0, len = this.series.length; i < len; i++) {
         if ( i < len - 1) {
           if (this.series[i].rightSide && this.series[i+1].rightSide && this.series[i].bottom >= this.series[i+1].top) {
             this.tooltips[i].style.cssText += `max-height: ${this.series[i].height - this.series[i].bottom + this.series[i+1].top}px;overflow-y:scroll;`
@@ -490,7 +493,19 @@ export class RoseChart {
     const width = this.parentDom.offsetWidth;
     const height = this.parentDom.offsetHeight;
     if (this.width !== width || this.height !== height) {
-      this.update();
+      this.debounce(2000, this.update.bind(this));
+    }
+  }
+  debounce(delay: number, fn: any) {
+    if (!this.debounceTimeout) {
+      this.debounceTimeout = setTimeout(fn, delay);
+      this.lastTime = +new Date();
+    } else {
+      if (+new Date() - this.lastTime < delay) {
+        this.lastTime = +new Date();
+        clearTimeout(this.debounceTimeout);
+        this.debounceTimeout = setTimeout(fn, delay);
+      }
     }
   }
   mouseMoveHandler(e: MouseEvent): void {
@@ -761,10 +776,10 @@ export class RoseChart {
       1 + Math.pow(k, 2),
       2 * (k * b - o1 - k * o2),
       Math.pow(o1, 2) +
-        Math.pow(b, 2) +
-        Math.pow(o2, 2) -
-        Math.pow(r, 2) -
-        2 * b * o2
+      Math.pow(b, 2) +
+      Math.pow(o2, 2) -
+      Math.pow(r, 2) -
+      2 * b * o2
     );
     const x1 = result.x1;
     const x2 = result.x2;

@@ -59,7 +59,7 @@ export interface ChartOption {
   offsetX?: number;
   offsetY?: number;
   renderMode?: 'svg' | 'canvas';
-  tooltipCLass?: string;
+  tooltipClass?: string;
   autoHide?: boolean;
 }
 
