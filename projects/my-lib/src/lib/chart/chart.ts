@@ -1,7 +1,8 @@
 import {
   ChartOption,
   DoublePoint,
-  Point, ProdChartOption,
+  Point,
+  ProdChartOption,
   ProdSerial,
   SerialAndIndex,
   XPoint
@@ -47,6 +48,10 @@ export class RoseChart {
   private tooltips: HTMLElement[] = [];
   private debounceTimeout: any;
   private lastTime: number;
+  private isInit = true;
+  private svgLine = [];
+  private polylineWidth = 10;
+  private defaultOffsetY = -10;
   constructor(opt: ChartOption) {
     this.option = opt;
   }
@@ -56,7 +61,6 @@ export class RoseChart {
     this.create();
   }
   public update(op?: ChartOption) {
-    console.log('update');
     if (op) {
       this.option = op;
     }
@@ -78,7 +82,9 @@ export class RoseChart {
     if (this.prodOption.series.length === 1) {
       this.renderMode = 'canvas';
     }
-    this.parentDom = document.getElementById(this.prodOption.id);
+    if (!this.parentDom) {
+      this.parentDom = document.getElementById(this.prodOption.id);
+    }
     const width = this.parentDom.offsetWidth;
     const height = this.parentDom.offsetHeight;
     this.width = width;
@@ -101,6 +107,7 @@ export class RoseChart {
     this.drawHtml();
     this.addMoveHandler();
     this.addResizeHandler();
+    this.isInit = false;
   }
   public destroy() {
     this.containerDom.removeEventListener(
@@ -174,11 +181,11 @@ export class RoseChart {
       }
       series[i].indicatorPointX1 =
         (series[i].radius + series[i].indicatorOffset) *
-        Math.cos(series[i].indicatorAngle) +
+          Math.cos(series[i].indicatorAngle) +
         this.centerX;
       series[i].indicatorPointY1 =
         (series[i].radius + series[i].indicatorOffset) *
-        Math.sin(series[i].indicatorAngle) +
+          Math.sin(series[i].indicatorAngle) +
         this.centerY;
       series[i].indicatorPointX2 =
         series[i].indicatorLength * Math.cos(series[i].indicatorAngle) +
@@ -203,10 +210,25 @@ export class RoseChart {
           series[i].indicatorPointX1 +
           series[i].indicatorLength * Math.cos(finalAngle);
       }
+      if (series[i].indicatorPointX1 >= this.centerX) {
+        series[i].left = series[i].indicatorPointX2;
+        series[i].right = 'auto';
+        series[i].rightSide = true;
+      } else {
+        series[i].right = this.width - series[i].indicatorPointX2;
+        series[i].left = 'auto';
+        series[i].leftSide = true;
+      }
+      series[i].top = this.height - series[i].indicatorPointY2;
     }
     this.series = series;
   }
-  draw(drawEntity: ProdSerial, isMask?: boolean, fadeIn?: boolean, isSvg?: boolean) {
+  draw(
+    drawEntity: ProdSerial,
+    isMask?: boolean,
+    fadeIn?: boolean,
+    isSvg?: boolean
+  ) {
     if (this.renderMode === 'canvas') {
       this.pen.beginPath();
       this.pen.fillStyle = drawEntity.color;
@@ -229,9 +251,15 @@ export class RoseChart {
         if (fadeIn && drawEntity.highLightColor) {
           this.pen.strokeStyle = drawEntity.highLightColor;
         }
-        this.pen.moveTo(drawEntity.indicatorPointX1, drawEntity.indicatorPointY1);
+        this.pen.moveTo(
+          drawEntity.indicatorPointX1,
+          drawEntity.indicatorPointY1
+        );
         this.pen.lineWidth = 1;
-        this.pen.lineTo(drawEntity.indicatorPointX2, drawEntity.indicatorPointY2);
+        this.pen.lineTo(
+          drawEntity.indicatorPointX2,
+          drawEntity.indicatorPointY2
+        );
         this.pen.stroke();
         this.pen.closePath();
       }
@@ -241,11 +269,17 @@ export class RoseChart {
         const params = this.calculateParams(drawEntity);
         const largeArcFlag = drawEntity.angleScope < Math.PI ? 0 : 1;
         if (isSvg) {
-          this.prevSvg.setAttribute('d', `M ${params.centerX} ${params.centerY}
-    L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`);
+          this.prevSvg.setAttribute(
+            'd',
+            `M ${params.centerX} ${params.centerY}
+    L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`
+          );
         } else {
-          this.currentSvg.setAttribute('d', `M ${params.centerX} ${params.centerY}
-    L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`);
+          this.currentSvg.setAttribute(
+            'd',
+            `M ${params.centerX} ${params.centerY}
+    L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`
+          );
         }
       } else {
         if (isSvg) {
@@ -279,13 +313,29 @@ export class RoseChart {
       inner.innerHTML = this.prodOption.circleTxt;
       this.containerDom.appendChild(inner);
     }
-    for (const item of this.series) {
+    for (let i = 0, len = this.series.length; i < len; i++) {
+      let item = this.series[i];
       if (item.indicateTxt && item.showIndicate) {
+        let points = `${item.indicatorPointX1},${item.indicatorPointY1} ${item.indicatorPointX2},${item.indicatorPointY2}`;
+        if (this.option.polyline) {
+          if (item.leftSide) {
+            points += ` ${item.indicatorPointX2 - this.polylineWidth},${item.indicatorPointY2}`;
+          } else {
+            points += ` ${item.indicatorPointX2 + this.polylineWidth},${item.indicatorPointY2}`;
+          }
+        }
+        const polyline = this.createSvgEl('polyline', {
+          points: points,
+          style: `stroke:${item.color};fill:none;`
+        });
+        this.svgLine.push(polyline);
+        this.svg.appendChild(polyline);
         const tooltipDiv = document.createElement('div');
-        tooltipDiv.className = `rose-chart-tooltip ${this.option.tooltipClass || ''}`;
+        tooltipDiv.className = `rose-chart-tooltip ${this.option.tooltipClass ||
+        ''}`;
         let topVal = item.indicatorPointY2;
-        let leftVal: number| string = 'auto';
-        let rightVal: number| string = 'auto';
+        let leftVal: number | string = 'auto';
+        let rightVal: number | string = 'auto';
         if (item.indicatorPointX2 > this.centerX) {
           if (this.defaultOffset) {
             leftVal = item.indicatorPointX2 + 10 + (item.indicateOffsetX || 0);
@@ -294,14 +344,19 @@ export class RoseChart {
           }
         } else {
           if (this.defaultOffset) {
-            rightVal = this.width - item.indicatorPointX2 + 10 - (item.indicateOffsetX || 0);
+            rightVal =
+              this.width -
+              item.indicatorPointX2 +
+              10 -
+              (item.indicateOffsetX || 0);
           } else {
-            rightVal = this.width - item.indicatorPointX2 - (item.indicateOffsetX || 0);
+            rightVal =
+              this.width - item.indicatorPointX2 - (item.indicateOffsetX || 0);
           }
         }
         if (item.indicatorPointY2 < this.centerY) {
           if (this.defaultOffset) {
-            topVal = item.indicatorPointY2 - 10 +(item.indicateOffsetY || 0);
+            topVal = item.indicatorPointY2 - 10 + (item.indicateOffsetY || 0);
           } else {
             topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
           }
@@ -312,44 +367,97 @@ export class RoseChart {
             topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
           }
         }
-        if (Math.abs(Math.abs(item.indicatorAngle) - Math.PI / 2) <= Math.PI / 10) {
-          if (item.indicatorPointY2 < this.centerY) {
-            topVal = item.indicatorPointY2 - 20 + (item.indicateOffsetY || 0);
-          } else {
-            topVal = item.indicatorPointY2 + 1 + (item.indicateOffsetY || 0);
-          }
-          if (Math.abs(item.indicatorAngle) >= Math.PI / 2) {
-            rightVal = this.width - item.indicatorPointX2 - 4 - (item.indicateOffsetX || 0);
-          } else {
-            leftVal = item.indicatorPointX2 + 1 + (item.indicateOffsetX || 0);
-          }
+        if (this.option.polyline) {
+          rightVal = rightVal === 'auto' ? 'auto' : rightVal as number + this.polylineWidth;
+          leftVal = leftVal === 'auto' ? 'auto' : leftVal as number + this.polylineWidth;
         }
-        tooltipDiv.style.cssText += `position:absolute;top:${topVal}px;left:${leftVal === 'auto' ? 'auto' : leftVal + 'px'};
+        topVal += this.defaultOffsetY;
+        tooltipDiv.style.cssText += `position:absolute;top:${topVal}px;left:${
+          leftVal === 'auto' ? 'auto' : leftVal + 'px'
+        };
         right:${rightVal === 'auto' ? 'auto' : rightVal + 'px'};`;
         tooltipDiv.innerHTML = item.indicateTxt;
         this.tooltips.push(tooltipDiv);
         this.containerDom.appendChild(tooltipDiv);
         const h = tooltipDiv.offsetHeight;
-        item.leftSide = rightVal !== 'auto';
-        item.rightSide = leftVal !== 'auto';
+        const w = tooltipDiv.offsetHeight;
         item.left = leftVal;
         item.right = rightVal;
         item.top = topVal;
         item.bottom = topVal + h;
         item.height = h;
+        item.width = w;
       }
     }
-    if (this.option.autoHide) {
-      for (let i = 0, len = this.series.length; i < len; i++) {
-        if ( i < len - 1) {
-          if (this.series[i].rightSide && this.series[i+1].rightSide && this.series[i].bottom >= this.series[i+1].top) {
-            this.tooltips[i].style.cssText += `max-height: ${this.series[i].height - this.series[i].bottom + this.series[i+1].top}px;overflow-y:scroll;`
-          } else if (this.series[i].leftSide && this.series[i+1].leftSide && this.series[i+1].bottom >= this.series[i].top) {
-            this.tooltips[i+1].style.cssText += `max-height: ${this.series[i+1].height - this.series[i+1].bottom + this.series[i].top}px;overflow-y:scroll;`
+    for(let i = 0, len = this.series.length; i < len; i++) {
+      if (this.option.autoHide) {
+        if (i < len - 1) {
+          if (
+            this.series[i].rightSide &&
+            this.series[i + 1].rightSide &&
+            this.series[i].bottom >= this.series[i + 1].top
+          ) {
+            const top = this.series[i + 1].top - this.series[i].bottom + this.series[i + 1].top;
+            const newX = Math.abs((this.series[i + 1].top - this.series[i].bottom) / Math.tan(this.series[i].indicatorAngle));
+            const newLeft = this.series[i].left as number + newX;
+            this.tooltips[i].style.cssText += `top:${top-10}px;left:${newLeft}px;`;
+            this.series[i].top = top;
+            this.series[i].left = this.series[i].indicatorPointX2 - this.polylineWidth;
+            this.series[i].bottom = top + this.series[i].height;
+            // this.series[i].indicatorPointX2 = newLeft;
+            let points = '';
+            if (this.series[i].indicatorPointY1 <= this.centerY) {
+              points = `${this.series[i].indicatorPointX1},${this.series[i].indicatorPointY1} ${this.series[i].indicatorPointX2-newX},${top}`;
+            } else {
+              points = `${this.series[i].indicatorPointX1},${this.series[i].indicatorPointY1} ${this.series[i].indicatorPointX2+newX},${top}`;
+            }
+
+            if (this.option.polyline) {
+              points += ` ${this.series[i].indicatorPointX2-newX + this.polylineWidth},${top}`;
+              if (this.series[i].indicatorPointY1 <= this.centerY) {
+                this.tooltips[i].style.cssText += `left:${this.series[i].indicatorPointX2-newX + this.polylineWidth}px;`;
+              } else {
+                this.tooltips[i].style.cssText += `left:${this.series[i].indicatorPointX2+newX + this.polylineWidth}px;`;
+              }
+              this.svgLine[i].setAttribute('points', points);
+            }
+            console.log(i)
+            continue;
+          } else if (
+            this.series[i].leftSide &&
+            this.series[i + 1].leftSide
+          ) {
+            // this.tooltips[i + 1].style.cssText += `max-height: ${this.series[
+            //   i + 1
+            // ].height -
+            //   this.series[i + 1].bottom +
+            //   this.series[i].top}px;overflow-y:scroll;`;
+            const top = this.series[i + 1].top - this.series[i + 1].bottom + this.series[i].top;
+            const newX = (this.series[i].top - this.series[i + 1].bottom) / Math.tan(this.series[i+1].indicatorAngle);
+            const newRight = this.series[i+1].right as number - newX;
+            if (this.series[i + 1].bottom >= this.series[i].top) {
+              this.tooltips[i + 1].style.cssText += `top:${top-10}px;right:${newRight}px;`;
+              this.series[i + 1].top = top;
+              this.series[i + 1].right = this.width - this.series[i + 1].indicatorPointX2 + this.polylineWidth;
+              this.series[i + 1].bottom = top + this.series[i + 1].height;
+              this.series[i + 1].indicatorPointX2 += newX;
+              let points = `${this.series[i + 1].indicatorPointX1},${this.series[i + 1].indicatorPointY1} ${this.series[i + 1].indicatorPointX2},${top}`;
+              if (this.option.polyline) {
+                if (this.series[i].leftSide) {
+                  points += ` ${this.series[i + 1].indicatorPointX2 - this.polylineWidth},${top}`;
+                  this.tooltips[i].style.cssText += `right:${this.width - this.series[i].indicatorPointX2 + this.polylineWidth}px;`;
+                }
+                this.svgLine[i + 1].setAttribute('points', points);
+              }
+              continue;
+            }
           }
         }
         if (this.series[i].bottom > this.height) {
-          this.tooltips[i].style.cssText += `max-height: ${this.series[i].height - this.series[i].bottom + this.height}px;overflow-y:scroll;`;
+          this.tooltips[i].style.cssText += `max-height: ${this.series[i]
+            .height -
+          this.series[i].bottom +
+          this.height}px;overflow-y:scroll;`;
         }
       }
     }
@@ -390,7 +498,7 @@ export class RoseChart {
     };
     const d = document.createElementNS(this.svgOrg, tag);
     Object.keys(attrs).forEach(attr => {
-      const attName = (attr in ATTR_MAP ? ATTR_MAP[attr] : attr);
+      const attName = attr in ATTR_MAP ? ATTR_MAP[attr] : attr;
       const val = attrs[attr];
       if (attr in NS_MAP) {
         d.setAttributeNS(NS_MAP[attr], attName, val);
@@ -408,7 +516,7 @@ export class RoseChart {
     const y = centerY + Math.sin(serial.startAngle) * radius;
     const x1 = centerX + Math.cos(serial.endAngle) * radius;
     const y1 = centerY + Math.sin(serial.endAngle) * radius;
-    return {centerX, centerY, radius, x, y, x1, y1};
+    return { centerX, centerY, radius, x, y, x1, y1 };
   }
   drawSvg() {
     this.svg = this.createSvgEl('svg', {
@@ -429,13 +537,25 @@ export class RoseChart {
         'data-index': i
       });
       this.svg.appendChild(p);
-      if (item.indicateTxt && item.showIndicate ) {
-        const polyline = this.createSvgEl('polyline', {
-          points: `${item.indicatorPointX1},${item.indicatorPointY1} ${item.indicatorPointX2},${item.indicatorPointY2}`,
-          style: `stroke:${item.color};`
-        });
-        this.svg.appendChild(polyline);
-      }
+      // if (item.indicateTxt && item.showIndicate) {
+      //   let points = `${item.indicatorPointX1},${item.indicatorPointY1} ${item.indicatorPointX2},${item.indicatorPointY2}`;
+      //   if (this.option.polyline) {
+      //     if (item.leftSide) {
+      //       points += ` ${item.indicatorPointX2 - this.polylineWidth},${item.indicatorPointY2}`;
+      //     } else {
+      //       points += ` ${item.indicatorPointX2 + this.polylineWidth},${item.indicatorPointY2}`;
+      //     }
+      //   }
+      //   const polyline = this.createSvgEl('polyline', {
+      //     points: points,
+      //     style: `stroke:${item.color};fill:none;`
+      //   });
+      //   this.svgLine.push(polyline);
+      //   this.svg.appendChild(polyline);
+      // } else {
+      //   this.svgLine.push('');
+      // }
+
       this.pathList.push(p);
     }
     const circle = this.createSvgEl('circle', {
@@ -449,51 +569,60 @@ export class RoseChart {
     this.parentDom.appendChild(this.containerDom);
   }
   addMoveHandler() {
-    if (this.renderMode === 'canvas') {
-      this.containerDom.addEventListener(
-        'mousemove',
-        this.mouseMoveHandler.bind(this),
-        false
-      );
-    } else if (this.renderMode === 'svg') {
-      this.containerDom.addEventListener(
-        'mousemove',
-        this.mouseMoveHandler.bind(this),
-        false
-      );
-    }
-    this.hoverScale = this.prodOption.hoverScale
-      ? this.prodOption.hoverScale < 1
-        ? 1
-        : this.prodOption.hoverScale
-      : 1;
-    if (
-      this.prodOption.triggerType &&
-      this.prodOption.triggerType === 'click'
-    ) {
+    if (this.isInit) {
       if (this.renderMode === 'canvas') {
         this.containerDom.addEventListener(
-          'click',
-          this.clickOrMouseoverHandler.bind(this),
+          'mousemove',
+          this.mouseMoveHandler.bind(this),
           false
         );
       } else if (this.renderMode === 'svg') {
         this.containerDom.addEventListener(
-          'click',
-          this.clickOrMouseoverHandler.bind(this),
+          'mousemove',
+          this.mouseMoveHandler.bind(this),
           false
         );
+      }
+      this.hoverScale = this.prodOption.hoverScale
+        ? this.prodOption.hoverScale < 1
+          ? 1
+          : this.prodOption.hoverScale
+        : 1;
+      if (
+        this.prodOption.triggerType &&
+        this.prodOption.triggerType === 'click'
+      ) {
+        if (this.renderMode === 'canvas') {
+          this.containerDom.addEventListener(
+            'click',
+            this.clickOrMouseoverHandler.bind(this),
+            false
+          );
+        } else if (this.renderMode === 'svg') {
+          this.containerDom.addEventListener(
+            'click',
+            this.clickOrMouseoverHandler.bind(this),
+            false
+          );
+        }
       }
     }
   }
   addResizeHandler() {
-    window.addEventListener('resize', this.resizeHandler.bind(this), false);
+    if (this.isInit) {
+      window.addEventListener('resize', this.resizeHandler.bind(this), false);
+    }
   }
   resizeHandler() {
     const width = this.parentDom.offsetWidth;
     const height = this.parentDom.offsetHeight;
-    if (this.width !== width || this.height !== height) {
-      this.debounce(2000, this.update.bind(this));
+    if (
+      (this.width !== width || this.height !== height) &&
+      width !== 0 &&
+      height !== 0
+    ) {
+      this.update();
+      // this.debounce(2000, this.update.bind(this));
     }
   }
   debounce(delay: number, fn: any) {
@@ -776,10 +905,10 @@ export class RoseChart {
       1 + Math.pow(k, 2),
       2 * (k * b - o1 - k * o2),
       Math.pow(o1, 2) +
-      Math.pow(b, 2) +
-      Math.pow(o2, 2) -
-      Math.pow(r, 2) -
-      2 * b * o2
+        Math.pow(b, 2) +
+        Math.pow(o2, 2) -
+        Math.pow(r, 2) -
+        2 * b * o2
     );
     const x1 = result.x1;
     const x2 = result.x2;

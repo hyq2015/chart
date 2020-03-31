@@ -28,6 +28,7 @@ export interface ProdSerial extends SingleSerial {
   top?: number;
   bottom?: number;
   height?: number;
+  width?: number;
   left?: number | string;
   right?: number | string;
 }
@@ -61,6 +62,7 @@ export interface ChartOption {
   renderMode?: 'svg' | 'canvas';
   tooltipClass?: string;
   autoHide?: boolean;
+  polyline?: boolean;
 }
 
 export interface ProdChartOption extends ChartOption {

@@ -17,8 +17,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#00a758',
         value: 60,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> Retirement Fund ' +
-          '</span><br/><span class="chart-label-percent" style="color:#00a758;">60%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020 Retirement Fund ' +
+          '</span><span class="chart-label-percent" style="color:#00a758;">60%</span></div>',
         thickness: 45
       },
       {
@@ -26,8 +26,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#00009a',
         value: 20,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2035<br/> Retirement Fund ' +
-          '</span><br/><span class="chart-label-percent" style="color:#00009a;">20%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2035 Retirement Fund ' +
+          '</span><span class="chart-label-percent" style="color:#00009a;">20%</span></div>',
         thickness: 42
       },
       {
@@ -35,8 +35,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#ff7769',
         value: 10,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2030<br/> Retirement Fund ' +
-          '</span><br/><span class="chart-label-percent" style="color:#ff7769;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2030 Retirement Fund ' +
+          '</span><span class="chart-label-percent" style="color:#ff7769;">10%</span></div>',
         thickness: 40
       },
       {
@@ -45,7 +45,7 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 10,
         indicateTxt:
           '<div class="left-align"><span class="chart-label-text">Manulife MPF Smart Retirement</span>' +
-          '<br/><span class="chart-label-percent" style="color:#8e90a2;">10%</span></div>',
+          '<span class="chart-label-percent" style="color:#8e90a2;">10%</span></div>',
         thickness: 38,
         indicateOffsetY: -10,
         indicateOffsetX: 12
@@ -63,8 +63,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#00a758',
         value: 60,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF Smart<br/> ' +
-          'Retirement</span><br/><span class="chart-label-percent" style="color:#00a758;">40%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF Smart ' +
+          'Retirement</span><span class="chart-label-percent" style="color:#00a758;">40%</span></div>',
         thickness: 45
       },
       {
@@ -72,8 +72,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#00009a',
         value: 25,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2035<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00009a;">20%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2035 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00009a;">20%</span></div>',
         thickness: 42
       },
       {
@@ -81,8 +81,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#ff7769',
         value: 20,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2030<br/> Retirement Fund </span>' +
-          '<br/><span class="chart-label-percent" style="color:#ff7769;">20%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2030 Retirement Fund </span>' +
+          '<span class="chart-label-percent" style="color:#ff7769;">20%</span></div>',
         thickness: 40
       }
     ]
@@ -92,15 +92,15 @@ export class AppComponent  implements OnInit , AfterViewInit{
     radius: [35],
     hoverScale: 1.1,
     triggerType: 'click',
-    circleTxt: '<div style="font-weight: 300;font-size: 12px;line-height: 1.38">Click<br/>effect</div>',
+    circleTxt: '<div style="font-weight: 300;font-size: 12px;line-height: 1.38">Clickeffect</div>',
     series: [
       {
         color: '#00a758',
         highLightColor: '#00a758',
         value: 50,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">50%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">50%</span></div>',
         thickness: 45
       },
       {
@@ -108,8 +108,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#00009a',
         value: 30,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2035<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00009a;">30%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2035 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00009a;">30%</span></div>',
         thickness: 42
       },
       {
@@ -117,8 +117,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#ff7769',
         value: 10,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2030<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#ff7769;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2030 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#ff7769;">10%</span></div>',
         thickness: 40
       },
       {
@@ -127,7 +127,7 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 10,
         indicateTxt:
           '<div class="left-align"><span class="chart-label-text">Manulife MPF Smart Retirement</span>' +
-          '<br/><span class="chart-label-percent" style="color:#8e90a2;">10%</span></div>',
+          '<span class="chart-label-percent" style="color:#8e90a2;">10%</span></div>',
         thickness: 38,
         indicateOffsetY: -10,
         indicateOffsetX: 12
@@ -138,7 +138,7 @@ export class AppComponent  implements OnInit , AfterViewInit{
     id: 'can-outer3',
     radius: [35],
     triggerType: 'hover',
-    circleTxt: '<div style="font-weight: 300;font-size: 12px;line-height: 1.38">Hover<br/>effect</div>',
+    circleTxt: '<div style="font-weight: 300;font-size: 12px;line-height: 1.38">Hovereffect</div>',
     series: [
       {
         color: '#00a758',
@@ -172,63 +172,218 @@ export class AppComponent  implements OnInit , AfterViewInit{
   };
   option4: ChartOption = {
     id: 'can-outer4',
-    radius: [55],
+    radius: [35],
     tooltipClass: 'tool-tip',
-    autoHide: false,
+    autoHide: true,
+    defaultOffset: false,
+    polyline: true,
     series: [
       {
         color: '#00a758',
         highLightColor: '#00a758',
-        value: 18,
+        value: 4,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">18%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">18%</span></div>',
         thickness: 45
       },
       {
         color: '#00009a',
         highLightColor: '#00009a',
-        value: 20,
+        value: 3,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
         thickness: 42
       },
       {
         color: '#ff7769',
         highLightColor: '#ff7769',
-        value: 12,
+        value: 3,
         thickness: 40,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
       },
       {
-        color: '#8e90a2',
-        highLightColor: '#8e90a2',
-        value: 10,
-        thickness: 38,
+        color: '#00a758',
+        highLightColor: '#00a758',
+        value: 4,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">18%</span></div>',
+        thickness: 45
       },
       {
         color: '#00009a',
         highLightColor: '#00009a',
-        value: 16,
+        value: 3,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">16%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
         thickness: 42
       },
       {
         color: '#ff7769',
         highLightColor: '#ff7769',
-        value: 10,
+        value: 4,
+        thickness: 40,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+      },
+      {
+        color: '#8e90a2',
+        highLightColor: '#8e90a2',
+        value: 4,
+        thickness: 38,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+      },
+      {
+        color: '#00009a',
+        highLightColor: '#00009a',
+        value: 4,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">16%</span></div>',
+        thickness: 42
+      },
+      {
+        color: '#00009a',
+        highLightColor: '#00009a',
+        value: 3,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
+        thickness: 42
+      },
+      {
+        color: '#ff7769',
+        highLightColor: '#ff7769',
+        value: 4,
+        thickness: 40,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+      },
+      {
+        color: '#8e90a2',
+        highLightColor: '#8e90a2',
+        value: 4,
+        thickness: 38,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+      },
+      {
+        color: '#00009a',
+        highLightColor: '#00009a',
+        value: 4,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">16%</span></div>',
+        thickness: 42
+      },
+      {
+        color: '#00009a',
+        highLightColor: '#00009a',
+        value: 3,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
+        thickness: 42
+      },
+      {
+        color: '#ff7769',
+        highLightColor: '#ff7769',
+        value: 4,
+        thickness: 40,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+      },
+      {
+        color: '#8e90a2',
+        highLightColor: '#8e90a2',
+        value: 4,
+        thickness: 38,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+      },
+      {
+        color: '#00009a',
+        highLightColor: '#00009a',
+        value: 4,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">16%</span></div>',
+        thickness: 42
+      },
+      {
+        color: '#ff7769',
+        highLightColor: '#ff7769',
+        value: 3,
         thickness: 34,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">14%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">14%</span></div>',
+      },
+      {
+        color: '#ff7769',
+        highLightColor: '#ff7769',
+        value: 2,
+        thickness: 40,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+      },
+      {
+        color: '#8e90a2',
+        highLightColor: '#8e90a2',
+        value: 3,
+        thickness: 38,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+      },
+      {
+        color: '#ff7769',
+        highLightColor: '#ff7769',
+        value: 2,
+        thickness: 40,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+      },
+      {
+        color: '#8e90a2',
+        highLightColor: '#8e90a2',
+        value: 3,
+        thickness: 38,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span>><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+      },
+      {
+        color: '#ff7769',
+        highLightColor: '#ff7769',
+        value: 2,
+        thickness: 40,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+      },
+      {
+        color: '#8e90a2',
+        highLightColor: '#8e90a2',
+        value: 3,
+        thickness: 38,
+        indicateTxt:
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
       }
     ]
   };
@@ -250,8 +405,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 20,
         thickness: 42,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/> ' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">60%</span></div>'
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020 ' +
+          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">60%</span></div>'
       },
       {
         color: '#ff7769',
@@ -277,32 +432,32 @@ export class AppComponent  implements OnInit , AfterViewInit{
   rose5: RoseChart;
   constructor() {}
   ngOnInit(): void {
-    this.rose = new RoseChart(this.option);
-    this.rose1 = new RoseChart(this.option1);
-    this.rose2 = new RoseChart(this.option2);
-    this.rose3 = new RoseChart(this.option3);
+    // this.rose = new RoseChart(this.option);
+    // this.rose1 = new RoseChart(this.option1);
+    // this.rose2 = new RoseChart(this.option2);
+    // this.rose3 = new RoseChart(this.option3);
     this.rose4 = new RoseChart(this.option4);
-    this.rose5 = new RoseChart(this.option5);
-    this.rose.init();
-    this.rose1.init();
-    this.rose2.init();
-    this.rose3.init();
+    // this.rose5 = new RoseChart(this.option5);
+    // this.rose.init();
+    // this.rose1.init();
+    // this.rose2.init();
+    // this.rose3.init();
     this.rose4.init();
-    this.rose5.init();
+    // this.rose5.init();
   }
   ngAfterViewInit(): void {
   }
   update() {
-    this.option1.series[0].indicateTxt = '<div class="left-align"><span class="chart-label-text">Manulife MPF Smart<br/> ' +
-      'Retirement</span><br/><span class="chart-label-percent" style="color:#00a758;">40%</span></div>';
+    this.option1.series[0].indicateTxt = '<div class="left-align"><span class="chart-label-text">Manulife MPF Smart ' +
+      'Retirement</span><span class="chart-label-percent" style="color:#00a758;">40%</span></div>';
     this.option1.series[0].value = 40;
     this.option1.series[3] = {
       color: '#8e90a2',
       highLightColor: '#8e90a2',
       value: 20,
       indicateTxt:
-        '<div class="left-align"><span class="chart-label-text">Manulife MPF 2045<br/> ' +
-        'Retirement Fund</span><br/><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
+        '<div class="left-align"><span class="chart-label-text">Manulife MPF 2045 ' +
+        'Retirement Fund</span><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
       thickness: 40
     };
     this.rose1.update(this.option1);
