@@ -186,11 +186,11 @@ export class AppComponent  implements OnInit , AfterViewInit{
         highLightColor: '#00a758',
         value: 4,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020 ' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">18%</span></div>',
+          '<div class="left-align"><span class="chart-label-text" style="color: blue">I have custom offsetX & offsetY' +
+          '</span><span class="chart-label-percent" style="color:#00a758;">18%</span></div>',
         thickness: 45,
-        indicateOffsetX: 0,
-        // indicateOffsetY: -10
+        indicateOffsetX: 10,
+        indicateOffsetY: -10
       },
       {
         color: '#00009a',
@@ -200,7 +200,6 @@ export class AppComponent  implements OnInit , AfterViewInit{
           '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
           'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">20%</span></div>',
         thickness: 42,
-        // indicateOffsetY: 50
       },
       {
         color: '#ff7769',
@@ -210,7 +209,6 @@ export class AppComponent  implements OnInit , AfterViewInit{
         indicateTxt:
           '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
           'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
-        // indicateOffsetY: -10
       },
       {
         color: '#00a758',
@@ -245,8 +243,10 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 4,
         thickness: 38,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text" style="color: blue">I have custom offsetX & offsetY' +
+          '</span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+        indicateOffsetX: 10,
+        indicateOffsetY: 10,
       },
       {
         color: '#00009a',
@@ -281,17 +281,21 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 4,
         thickness: 38,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text" style="color: blue">I have custome offsetX' +
+          '</span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+        // indicateOffsetX: -10,
+        indicateOffsetY: 10
       },
       {
         color: '#00009a',
         highLightColor: '#00009a',
         value: 4,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">16%</span></div>',
-        thickness: 42
+          '<div class="left-align"><span class="chart-label-text" style="color: blue">I have custom offsetX & offsetY' +
+          '</span><span class="chart-label-percent" style="color:#00a758;">16%</span></div>',
+        thickness: 42,
+        indicateOffsetX: -10,
+        indicateOffsetY: 10
       },
       {
         color: '#00009a',
@@ -362,8 +366,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 2,
         thickness: 40,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/>' +
+          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
       },
       {
         color: '#8e90a2',
@@ -380,17 +384,10 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 2,
         thickness: 40,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/>' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
-      },
-      {
-        color: '#8e90a2',
-        highLightColor: '#8e90a2',
-        value: 3,
-        thickness: 38,
-        indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/>' +
-          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text" style="color: blue">I have custom offsetX & offsetY' +
+          '</span><br/><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+        indicateOffsetX: -10,
+        indicateOffsetY: -10
       }
     ]
   };

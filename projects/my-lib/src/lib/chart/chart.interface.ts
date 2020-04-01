@@ -31,6 +31,7 @@ export interface ProdSerial extends SingleSerial {
   width?: number;
   left?: number | string;
   right?: number | string;
+  points?: string;
 }
 export interface XPoint {
   x1: number;
