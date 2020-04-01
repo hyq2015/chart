@@ -100,6 +100,8 @@ export class RoseChart {
     if (this.maxRadius) {
       this.radiusGap = this.maxRadius - this.minRadius;
     }
+    this.svgLine = [];
+    this.tooltips = [];
   }
   create() {
     this.calculateRadius();
@@ -181,11 +183,11 @@ export class RoseChart {
       }
       series[i].indicatorPointX1 =
         (series[i].radius + series[i].indicatorOffset) *
-          Math.cos(series[i].indicatorAngle) +
+        Math.cos(series[i].indicatorAngle) +
         this.centerX;
       series[i].indicatorPointY1 =
         (series[i].radius + series[i].indicatorOffset) *
-          Math.sin(series[i].indicatorAngle) +
+        Math.sin(series[i].indicatorAngle) +
         this.centerY;
       series[i].indicatorPointX2 =
         series[i].indicatorLength * Math.cos(series[i].indicatorAngle) +
@@ -313,8 +315,6 @@ export class RoseChart {
       inner.innerHTML = this.prodOption.circleTxt;
       this.containerDom.appendChild(inner);
     }
-    const leftPart = [];
-    const rightPart = [];
     const firstQuadrant = [];
     const secondQuadrant = [];
     const thirdQuadrant = [];
@@ -387,11 +387,6 @@ export class RoseChart {
         item.height = h;
         item.width = w;
       }
-      if (item.leftSide) {
-        leftPart.push({item, index: i});
-      } else {
-        rightPart.push({item, index: i});
-      }
       if (item.rightSide && item.indicatorPointY2 <= this.centerY) {
         firstQuadrant.push({item, index: i});
       } else if (item.rightSide && item.indicatorPointY2 > this.centerY) {
@@ -404,6 +399,9 @@ export class RoseChart {
     }
     for (let i = 0, len = secondQuadrant.length; i < len; i++) {
       const itemCurrent = secondQuadrant[i].item;
+      if (!itemCurrent.showIndicate || !itemCurrent.indicateTxt) {
+        continue;
+      }
       const indexCurrent = secondQuadrant[i].index;
       let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
       ${itemCurrent.indicatorPointY2}`;
@@ -437,6 +435,9 @@ export class RoseChart {
     }
     for (let i = 0, len = fourthQuadrant.length; i < len; i++) {
       const itemCurrent = fourthQuadrant[i].item;
+      if (!itemCurrent.showIndicate || !itemCurrent.indicateTxt) {
+        continue;
+      }
       const indexCurrent = fourthQuadrant[i].index;
       let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
       ${itemCurrent.indicatorPointY2}`;
@@ -470,6 +471,9 @@ export class RoseChart {
     }
     for (let len = firstQuadrant.length, i = len - 1; i >= 0; i--) {
       const itemCurrent = firstQuadrant[i].item;
+      if (!itemCurrent.showIndicate || !itemCurrent.indicateTxt) {
+        continue;
+      }
       const indexCurrent = firstQuadrant[i].index;
       let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
       ${itemCurrent.indicatorPointY2}`;
@@ -485,40 +489,6 @@ export class RoseChart {
           if (itemNext.bottom > itemCurrent.top) {
             const y = itemNext.bottom - itemCurrent.top;
             const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
-            let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
-            ${itemNext.indicatorPointY2 - y + 10}`;
-            let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
-            if (this.option.polyline) {
-              points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 - y + 10}`;
-              cssText = `left:${indexNext.left - x + this.polylineWidth}px;top:${itemNext.top - y}px;`;
-            }
-            this.svgLine[indexNext].setAttribute('points', points);
-            this.tooltips[indexNext].style.cssText += cssText;
-            itemNext.top -= y;
-            itemNext.bottom -= y;
-            itemNext.indicatorPointY2 -= y;
-          }
-        }
-      }
-    }
-    for (let len = firstQuadrant.length, i = len - 1; i >= 0; i--) {
-      const itemCurrent = firstQuadrant[i].item;
-      const indexCurrent = firstQuadrant[i].index;
-      let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
-      ${itemCurrent.indicatorPointY2}`;
-      if (this.option.polyline) {
-        points += ` ${itemCurrent.indicatorPointX2 + this.polylineWidth},${itemCurrent.indicatorPointY2}`;
-      }
-      this.svgLine[indexCurrent].setAttribute('points', points);
-      this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left}px;top:${itemCurrent.top}px;`;
-      if (this.option.boost) {
-        if (i > 0) {
-          const itemNext = firstQuadrant[i - 1].item;
-          const indexNext = firstQuadrant[i - 1].index;
-          if (itemNext.bottom > itemCurrent.top) {
-            const y = itemNext.bottom - itemCurrent.top;
-            const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
-            console.log(indexNext,y , x);
             let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
             ${itemNext.indicatorPointY2 - y + 10}`;
             let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
@@ -537,6 +507,9 @@ export class RoseChart {
     }
     for (let len = thirdQuadrant.length, i = len - 1; i >= 0; i--) {
       const itemCurrent = thirdQuadrant[i].item;
+      if (!itemCurrent.showIndicate || !itemCurrent.indicateTxt) {
+        continue;
+      }
       const indexCurrent = thirdQuadrant[i].index;
       let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
       ${itemCurrent.indicatorPointY2}`;
@@ -1012,10 +985,10 @@ export class RoseChart {
       1 + Math.pow(k, 2),
       2 * (k * b - o1 - k * o2),
       Math.pow(o1, 2) +
-        Math.pow(b, 2) +
-        Math.pow(o2, 2) -
-        Math.pow(r, 2) -
-        2 * b * o2
+      Math.pow(b, 2) +
+      Math.pow(o2, 2) -
+      Math.pow(r, 2) -
+      2 * b * o2
     );
     const x1 = result.x1;
     const x2 = result.x2;
