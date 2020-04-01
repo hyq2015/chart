@@ -100,8 +100,6 @@ export class RoseChart {
     if (this.maxRadius) {
       this.radiusGap = this.maxRadius - this.minRadius;
     }
-    this.svgLine = [];
-    this.tooltips = [];
   }
   create() {
     this.calculateRadius();
@@ -183,11 +181,11 @@ export class RoseChart {
       }
       series[i].indicatorPointX1 =
         (series[i].radius + series[i].indicatorOffset) *
-        Math.cos(series[i].indicatorAngle) +
+          Math.cos(series[i].indicatorAngle) +
         this.centerX;
       series[i].indicatorPointY1 =
         (series[i].radius + series[i].indicatorOffset) *
-        Math.sin(series[i].indicatorAngle) +
+          Math.sin(series[i].indicatorAngle) +
         this.centerY;
       series[i].indicatorPointX2 =
         series[i].indicatorLength * Math.cos(series[i].indicatorAngle) +
@@ -221,7 +219,7 @@ export class RoseChart {
         series[i].left = 'auto';
         series[i].leftSide = true;
       }
-      series[i].top = this.height - series[i].indicatorPointY2 - 10;
+      // series[i].top = this.height - series[i].indicatorPointY2 - 10;
     }
     this.series = series;
   }
@@ -315,6 +313,8 @@ export class RoseChart {
       inner.innerHTML = this.prodOption.circleTxt;
       this.containerDom.appendChild(inner);
     }
+    const leftPart = [];
+    const rightPart = [];
     const firstQuadrant = [];
     const secondQuadrant = [];
     const thirdQuadrant = [];
@@ -355,15 +355,19 @@ export class RoseChart {
         }
         if (item.indicatorPointY2 < this.centerY) {
           if (this.defaultOffset) {
-            topVal = item.indicatorPointY2 - 10 + (item.indicateOffsetY || 0);
+            // topVal = item.indicatorPointY2 - 10 + (item.indicateOffsetY || 0);
+            topVal = item.indicatorPointY2 - 10;
           } else {
-            topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
+            // topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
+            topVal = item.indicatorPointY2;
           }
         } else {
           if (this.defaultOffset) {
-            topVal = item.indicatorPointY2 - 8 + (item.indicateOffsetY || 0);
+            // topVal = item.indicatorPointY2 - 8 + (item.indicateOffsetY || 0);
+            topVal = item.indicatorPointY2 - 8;
           } else {
-            topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
+            // topVal = item.indicatorPointY2 + (item.indicateOffsetY || 0);
+            topVal = item.indicatorPointY2;
           }
         }
         if (this.option.polyline) {
@@ -386,6 +390,11 @@ export class RoseChart {
         item.bottom = topVal + h;
         item.height = h;
         item.width = w;
+      }
+      if (item.leftSide) {
+        leftPart.push({item, index: i});
+      } else {
+        rightPart.push({item, index: i});
       }
       if (item.rightSide && item.indicatorPointY2 <= this.centerY) {
         firstQuadrant.push({item, index: i});
@@ -985,10 +994,10 @@ export class RoseChart {
       1 + Math.pow(k, 2),
       2 * (k * b - o1 - k * o2),
       Math.pow(o1, 2) +
-      Math.pow(b, 2) +
-      Math.pow(o2, 2) -
-      Math.pow(r, 2) -
-      2 * b * o2
+        Math.pow(b, 2) +
+        Math.pow(o2, 2) -
+        Math.pow(r, 2) -
+        2 * b * o2
     );
     const x1 = result.x1;
     const x2 = result.x2;
