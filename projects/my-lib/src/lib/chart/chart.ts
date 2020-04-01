@@ -39,7 +39,7 @@ export class RoseChart {
   private activeItem: SerialAndIndex;
   private currentSvg: HTMLElement;
   private prevSvg: HTMLElement;
-  private defaultOffset = true;
+  private defaultOffset = false;
   public prodOption: ProdChartOption;
   public option: ChartOption;
   private renderMode = 'svg';
