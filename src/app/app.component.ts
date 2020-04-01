@@ -174,7 +174,7 @@ export class AppComponent  implements OnInit , AfterViewInit{
     id: 'can-outer4',
     radius: [35],
     tooltipClass: 'tool-tip',
-    autoHide: true,
+    boost: true,
     defaultOffset: false,
     polyline: true,
     series: [
@@ -364,8 +364,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 3,
         thickness: 38,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span>><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/>' +
+          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
       },
       {
         color: '#ff7769',
@@ -373,8 +373,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 2,
         thickness: 40,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/>' +
+          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">12%</span></div>',
       },
       {
         color: '#8e90a2',
@@ -382,8 +382,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
         value: 3,
         thickness: 38,
         indicateTxt:
-          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020' +
-          'Retirement Fund </span><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
+          '<div class="left-align"><span class="chart-label-text">Manulife MPF 2020<br/>' +
+          'Retirement Fund </span><br/><span class="chart-label-percent" style="color:#00a758;">10%</span></div>',
       }
     ]
   };

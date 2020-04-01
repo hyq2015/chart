@@ -219,7 +219,7 @@ export class RoseChart {
         series[i].left = 'auto';
         series[i].leftSide = true;
       }
-      series[i].top = this.height - series[i].indicatorPointY2;
+      series[i].top = this.height - series[i].indicatorPointY2 - 10;
     }
     this.series = series;
   }
@@ -313,17 +313,16 @@ export class RoseChart {
       inner.innerHTML = this.prodOption.circleTxt;
       this.containerDom.appendChild(inner);
     }
+    const leftPart = [];
+    const rightPart = [];
+    const firstQuadrant = [];
+    const secondQuadrant = [];
+    const thirdQuadrant = [];
+    const fourthQuadrant = [];
     for (let i = 0, len = this.series.length; i < len; i++) {
       let item = this.series[i];
       if (item.indicateTxt && item.showIndicate) {
-        let points = `${item.indicatorPointX1},${item.indicatorPointY1} ${item.indicatorPointX2},${item.indicatorPointY2}`;
-        if (this.option.polyline) {
-          if (item.leftSide) {
-            points += ` ${item.indicatorPointX2 - this.polylineWidth},${item.indicatorPointY2}`;
-          } else {
-            points += ` ${item.indicatorPointX2 + this.polylineWidth},${item.indicatorPointY2}`;
-          }
-        }
+        const points = `${item.indicatorPointX1},${item.indicatorPointY1} ${item.indicatorPointX2},${item.indicatorPointY2}`;
         const polyline = this.createSvgEl('polyline', {
           points: points,
           style: `stroke:${item.color};fill:none;`
@@ -388,76 +387,184 @@ export class RoseChart {
         item.height = h;
         item.width = w;
       }
+      if (item.leftSide) {
+        leftPart.push({item, index: i});
+      } else {
+        rightPart.push({item, index: i});
+      }
+      if (item.rightSide && item.indicatorPointY2 <= this.centerY) {
+        firstQuadrant.push({item, index: i});
+      } else if (item.rightSide && item.indicatorPointY2 > this.centerY) {
+        secondQuadrant.push({item, index: i});
+      } else if (item.leftSide && item.indicatorPointY2 > this.centerY) {
+        thirdQuadrant.push({item, index: i});
+      } else if (item.leftSide && item.indicatorPointY2 <= this.centerY) {
+        fourthQuadrant.push({item, index: i});
+      }
     }
-    for(let i = 0, len = this.series.length; i < len; i++) {
-      if (this.option.autoHide) {
+    for (let i = 0, len = secondQuadrant.length; i < len; i++) {
+      const itemCurrent = secondQuadrant[i].item;
+      const indexCurrent = secondQuadrant[i].index;
+      let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
+      ${itemCurrent.indicatorPointY2}`;
+      if (this.option.polyline) {
+        points += ` ${itemCurrent.indicatorPointX2 + this.polylineWidth},${itemCurrent.indicatorPointY2}`;
+      }
+      this.svgLine[indexCurrent].setAttribute('points', points);
+      this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left}px;top:${itemCurrent.top}px;`;
+      if (this.option.boost) {
         if (i < len - 1) {
-          if (
-            this.series[i].rightSide &&
-            this.series[i + 1].rightSide &&
-            this.series[i].bottom >= this.series[i + 1].top
-          ) {
-            const top = this.series[i + 1].top - this.series[i].bottom + this.series[i + 1].top;
-            const newX = Math.abs((this.series[i + 1].top - this.series[i].bottom) / Math.tan(this.series[i].indicatorAngle));
-            const newLeft = this.series[i].left as number + newX;
-            this.tooltips[i].style.cssText += `top:${top-10}px;left:${newLeft}px;`;
-            this.series[i].top = top;
-            this.series[i].left = this.series[i].indicatorPointX2 - this.polylineWidth;
-            this.series[i].bottom = top + this.series[i].height;
-            // this.series[i].indicatorPointX2 = newLeft;
-            let points = '';
-            if (this.series[i].indicatorPointY1 <= this.centerY) {
-              points = `${this.series[i].indicatorPointX1},${this.series[i].indicatorPointY1} ${this.series[i].indicatorPointX2-newX},${top}`;
-            } else {
-              points = `${this.series[i].indicatorPointX1},${this.series[i].indicatorPointY1} ${this.series[i].indicatorPointX2+newX},${top}`;
-            }
-
+          const itemNext = secondQuadrant[i + 1].item;
+          const indexNext = secondQuadrant[i + 1].index;
+          if (itemNext.top < itemCurrent.bottom) {
+            const y = itemCurrent.bottom - itemNext.top;
+            const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
+            let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
+            ${itemNext.indicatorPointY2 + y + 10}`;
+            let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
             if (this.option.polyline) {
-              points += ` ${this.series[i].indicatorPointX2-newX + this.polylineWidth},${top}`;
-              if (this.series[i].indicatorPointY1 <= this.centerY) {
-                this.tooltips[i].style.cssText += `left:${this.series[i].indicatorPointX2-newX + this.polylineWidth}px;`;
-              } else {
-                this.tooltips[i].style.cssText += `left:${this.series[i].indicatorPointX2+newX + this.polylineWidth}px;`;
-              }
-              this.svgLine[i].setAttribute('points', points);
+              points += ` ${itemNext.indicatorPointX2 - x + this.polylineWidth},${itemNext.indicatorPointY2 + y + 10}`;
+              cssText = `left:${indexNext.left - x + this.polylineWidth}px;top:${itemNext.top + y}px;`;
             }
-            console.log(i)
-            continue;
-          } else if (
-            this.series[i].leftSide &&
-            this.series[i + 1].leftSide
-          ) {
-            // this.tooltips[i + 1].style.cssText += `max-height: ${this.series[
-            //   i + 1
-            // ].height -
-            //   this.series[i + 1].bottom +
-            //   this.series[i].top}px;overflow-y:scroll;`;
-            const top = this.series[i + 1].top - this.series[i + 1].bottom + this.series[i].top;
-            const newX = (this.series[i].top - this.series[i + 1].bottom) / Math.tan(this.series[i+1].indicatorAngle);
-            const newRight = this.series[i+1].right as number - newX;
-            if (this.series[i + 1].bottom >= this.series[i].top) {
-              this.tooltips[i + 1].style.cssText += `top:${top-10}px;right:${newRight}px;`;
-              this.series[i + 1].top = top;
-              this.series[i + 1].right = this.width - this.series[i + 1].indicatorPointX2 + this.polylineWidth;
-              this.series[i + 1].bottom = top + this.series[i + 1].height;
-              this.series[i + 1].indicatorPointX2 += newX;
-              let points = `${this.series[i + 1].indicatorPointX1},${this.series[i + 1].indicatorPointY1} ${this.series[i + 1].indicatorPointX2},${top}`;
-              if (this.option.polyline) {
-                if (this.series[i].leftSide) {
-                  points += ` ${this.series[i + 1].indicatorPointX2 - this.polylineWidth},${top}`;
-                  this.tooltips[i].style.cssText += `right:${this.width - this.series[i].indicatorPointX2 + this.polylineWidth}px;`;
-                }
-                this.svgLine[i + 1].setAttribute('points', points);
-              }
-              continue;
-            }
+            this.svgLine[indexNext].setAttribute('points', points);
+            this.tooltips[indexNext].style.cssText += cssText;
+            itemNext.top += y;
+            itemNext.bottom += y;
+            itemNext.indicatorPointY2 += y;
           }
         }
-        if (this.series[i].bottom > this.height) {
-          this.tooltips[i].style.cssText += `max-height: ${this.series[i]
-            .height -
-          this.series[i].bottom +
-          this.height}px;overflow-y:scroll;`;
+      }
+    }
+    for (let i = 0, len = fourthQuadrant.length; i < len; i++) {
+      const itemCurrent = fourthQuadrant[i].item;
+      const indexCurrent = fourthQuadrant[i].index;
+      let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
+      ${itemCurrent.indicatorPointY2}`;
+      if (this.option.polyline) {
+        points += ` ${itemCurrent.indicatorPointX2 - this.polylineWidth},${itemCurrent.indicatorPointY2}`;
+      }
+      this.svgLine[indexCurrent].setAttribute('points', points);
+      this.tooltips[indexCurrent].style.cssText += `right:${itemCurrent.right}px;top:${itemCurrent.top}px;`;
+      if (this.option.boost) {
+        if (i < len - 1) {
+          const itemNext = fourthQuadrant[i + 1].item;
+          const indexNext = fourthQuadrant[i + 1].index;
+          if (itemNext.bottom > itemCurrent.top) {
+            const y = itemNext.bottom - itemCurrent.top;
+            const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
+            let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
+            ${itemNext.indicatorPointY2 - y + 10}`;
+            let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
+            if (this.option.polyline) {
+              points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 - y + 10}`;
+              cssText = `left:${indexNext.left - x + this.polylineWidth}px;top:${itemNext.top - y}px;`;
+            }
+            this.svgLine[indexNext].setAttribute('points', points);
+            this.tooltips[indexNext].style.cssText += cssText;
+            itemNext.top -= y;
+            itemNext.bottom -= y;
+            itemNext.indicatorPointY2 -= y;
+          }
+        }
+      }
+    }
+    for (let len = firstQuadrant.length, i = len - 1; i >= 0; i--) {
+      const itemCurrent = firstQuadrant[i].item;
+      const indexCurrent = firstQuadrant[i].index;
+      let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
+      ${itemCurrent.indicatorPointY2}`;
+      if (this.option.polyline) {
+        points += ` ${itemCurrent.indicatorPointX2 + this.polylineWidth},${itemCurrent.indicatorPointY2}`;
+      }
+      this.svgLine[indexCurrent].setAttribute('points', points);
+      this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left}px;top:${itemCurrent.top}px;`;
+      if (this.option.boost) {
+        if (i > 0) {
+          const itemNext = firstQuadrant[i - 1].item;
+          const indexNext = firstQuadrant[i - 1].index;
+          if (itemNext.bottom > itemCurrent.top) {
+            const y = itemNext.bottom - itemCurrent.top;
+            const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
+            let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
+            ${itemNext.indicatorPointY2 - y + 10}`;
+            let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
+            if (this.option.polyline) {
+              points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 - y + 10}`;
+              cssText = `left:${indexNext.left - x + this.polylineWidth}px;top:${itemNext.top - y}px;`;
+            }
+            this.svgLine[indexNext].setAttribute('points', points);
+            this.tooltips[indexNext].style.cssText += cssText;
+            itemNext.top -= y;
+            itemNext.bottom -= y;
+            itemNext.indicatorPointY2 -= y;
+          }
+        }
+      }
+    }
+    for (let len = firstQuadrant.length, i = len - 1; i >= 0; i--) {
+      const itemCurrent = firstQuadrant[i].item;
+      const indexCurrent = firstQuadrant[i].index;
+      let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
+      ${itemCurrent.indicatorPointY2}`;
+      if (this.option.polyline) {
+        points += ` ${itemCurrent.indicatorPointX2 + this.polylineWidth},${itemCurrent.indicatorPointY2}`;
+      }
+      this.svgLine[indexCurrent].setAttribute('points', points);
+      this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left}px;top:${itemCurrent.top}px;`;
+      if (this.option.boost) {
+        if (i > 0) {
+          const itemNext = firstQuadrant[i - 1].item;
+          const indexNext = firstQuadrant[i - 1].index;
+          if (itemNext.bottom > itemCurrent.top) {
+            const y = itemNext.bottom - itemCurrent.top;
+            const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
+            console.log(indexNext,y , x);
+            let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
+            ${itemNext.indicatorPointY2 - y + 10}`;
+            let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
+            if (this.option.polyline) {
+              points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 - y + 10}`;
+              cssText = `left:${indexNext.left - x + this.polylineWidth}px;top:${itemNext.top - y}px;`;
+            }
+            this.svgLine[indexNext].setAttribute('points', points);
+            this.tooltips[indexNext].style.cssText += cssText;
+            itemNext.top -= y;
+            itemNext.bottom -= y;
+            itemNext.indicatorPointY2 -= y;
+          }
+        }
+      }
+    }
+    for (let len = thirdQuadrant.length, i = len - 1; i >= 0; i--) {
+      const itemCurrent = thirdQuadrant[i].item;
+      const indexCurrent = thirdQuadrant[i].index;
+      let points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1} ${itemCurrent.indicatorPointX2},
+      ${itemCurrent.indicatorPointY2}`;
+      if (this.option.polyline) {
+        points += ` ${itemCurrent.indicatorPointX2 - this.polylineWidth},${itemCurrent.indicatorPointY2}`;
+      }
+      this.svgLine[indexCurrent].setAttribute('points', points);
+      this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left}px;top:${itemCurrent.top}px;`;
+      if (this.option.boost) {
+        if (i > 0) {
+          const itemNext = thirdQuadrant[i - 1].item;
+          const indexNext = thirdQuadrant[i - 1].index;
+          if (itemCurrent.bottom > itemNext.top) {
+            const y = itemCurrent.bottom - itemNext.top;
+            const x = Math.abs(y / Math.tan(itemNext.indicatorAngle));
+            let points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
+            ${itemNext.indicatorPointY2 + y + 10}`;
+            let cssText = `left:${indexNext.left - x}px;top:${itemNext.top + y}px;`;
+            if (this.option.polyline) {
+              points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 + y + 10}`;
+              cssText = `left:${indexNext.left - x + this.polylineWidth}px;top:${itemNext.top + y}px;`;
+            }
+            this.svgLine[indexNext].setAttribute('points', points);
+            this.tooltips[indexNext].style.cssText += cssText;
+            itemNext.top += y;
+            itemNext.bottom += y;
+            itemNext.indicatorPointY2 += y;
+          }
         }
       }
     }

@@ -61,7 +61,7 @@ export interface ChartOption {
   offsetY?: number;
   renderMode?: 'svg' | 'canvas';
   tooltipClass?: string;
-  autoHide?: boolean;
+  boost?: boolean;
   polyline?: boolean;
 }
 
