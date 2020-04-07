@@ -32,11 +32,13 @@ export class AppComponent  implements OnInit , AfterViewInit{
     boost: true,
     defaultOffset: false,
     polyline: true,
-    renderMode: 'canvas',
+    renderMode: 'svg',
+    triggerType: 'hover',
+    hoverScale: 1.1,
     series: [
       {
         color: '#00a758',
-        highLightColor: '#00a758',
+        highLightColor: '#000',
         value: 4,
         indicateTxt:
           '<div class="left-align"><span class="chart-label-text" style="color: blue">I have custom offsetX & offsetY' +
