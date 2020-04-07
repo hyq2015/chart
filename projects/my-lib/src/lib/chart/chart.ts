@@ -73,6 +73,9 @@ export class RoseChart {
       this.option = op;
     }
     this.containerDom.innerHTML = '';
+    this.tooltips = [];
+    this.svgLine = [];
+    this.pathList = [];
     this.init();
   }
 
