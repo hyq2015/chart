@@ -10,7 +10,6 @@ export class AppComponent  implements OnInit , AfterViewInit{
   title = 'front-end-experiment';
   option: ChartOption = {
     id: 'can-outer',
-    renderMode: 'canvas',
     radius: [35],
     boost: false,
     series: [
@@ -29,10 +28,8 @@ export class AppComponent  implements OnInit , AfterViewInit{
     id: 'can-outer4',
     radius: [35],
     tooltipClass: 'tool-tip',
-    boost: true,
     defaultOffset: false,
     polyline: true,
-    renderMode: 'svg',
     triggerType: 'hover',
     hoverScale: 1.1,
     series: [

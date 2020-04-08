@@ -248,9 +248,6 @@ export class RoseChart {
       }
     }
   }
-  drawMask() {
-
-  }
   drawHtml() {
     if (this.prodOption.circleTxt) {
       const inner = document.createElement('div');
@@ -305,10 +302,8 @@ export class RoseChart {
             topVal = item.indicatorPointY2;
           }
         }
-        if (this.option.polyline) {
-          rightVal = rightVal === 'auto' ? 'auto' : rightVal as number + this.polylineWidth;
-          leftVal = leftVal === 'auto' ? 'auto' : leftVal as number + this.polylineWidth;
-        }
+        rightVal = rightVal === 'auto' ? 'auto' : rightVal as number + this.polylineWidth;
+        leftVal = leftVal === 'auto' ? 'auto' : leftVal as number + this.polylineWidth;
         topVal += this.defaultOffsetY;
         if (this.tooltips.length !== this.prodOption.series.length) {
           const tooltipDiv = document.createElement('div');
@@ -375,16 +370,14 @@ export class RoseChart {
       points = `${itemNext.indicatorPointX1},${itemNext.indicatorPointY1} ${itemNext.indicatorPointX2 - x},
             ${itemNext.indicatorPointY2 + y + 10}`;
     }
-    if (this.option.polyline) {
-      if (index === 2) {
-        points += ` ${itemNext.indicatorPointX2 - x + this.polylineWidth},${itemNext.indicatorPointY2 + y + 10}`;
-      } else if (index === 4) {
-        points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 - y + 10}`;
-      } else if (index === 1) {
-        points += ` ${itemNext.indicatorPointX2 - x},${itemNext.indicatorPointY2 - y + 10}`;
-      } else if (index === 3) {
-        points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 + y + 10}`;
-      }
+    if (index === 2) {
+      points += ` ${itemNext.indicatorPointX2 - x + this.polylineWidth},${itemNext.indicatorPointY2 + y + 10}`;
+    } else if (index === 4) {
+      points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 - y + 10}`;
+    } else if (index === 1) {
+      points += ` ${itemNext.indicatorPointX2 - x},${itemNext.indicatorPointY2 - y + 10}`;
+    } else if (index === 3) {
+      points += ` ${itemNext.indicatorPointX2 - x - this.polylineWidth},${itemNext.indicatorPointY2 + y + 10}`;
     }
     if (index === 2) {
       itemNext.top += y;
@@ -414,26 +407,20 @@ export class RoseChart {
     itemNext.points = points;
   }
   setStyle(indexCurrent: number, itemCurrent: any) {
-    this.svgLine[indexCurrent].setAttribute('points', itemCurrent.points);
+    if (!this.option.polyline) {
+      const points = this.calculatePoints(itemCurrent.points);
+      this.svgLine[indexCurrent].setAttribute('points', points[0] + ' ' + points[points.length - 1]);
+    } else {
+      this.svgLine[indexCurrent].setAttribute('points', itemCurrent.points);
+    }
     this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left + (itemCurrent.indicateOffsetX || 0)}px;
     top:${itemCurrent.top + (itemCurrent.indicateOffsetY || 0)}px;`;
   }
-  drawPoints(points: any, color: string) {
+  calculatePoints(points: any) {
     points = points.replace(/[,]\s+/g, ',');
     points = points.replace(/\s{2,}/g, ' ');
     points = points.split(' ');
-    this.pen.lineWidth = 1;
-    this.pen.beginPath();
-    this.pen.strokeStyle = color;
-    for (let i = 0, len = points.length; i < len; i++) {
-      if (i === 0) {
-        this.pen.moveTo(parseFloat(points[0].split(',')[0]), parseFloat(points[0].split(',')[1]));
-      } else {
-        this.pen.lineTo(parseFloat(points[i].split(',')[0]), parseFloat(points[i].split(',')[1]));
-      }
-    }
-    this.pen.stroke();
-    this.pen.closePath();
+    return points;
   }
   handleFirstAndThirdQuadrant(index: number) {
     for (let len = this.quadrants[index].length, i = len - 1; i >= 0; i--) {
@@ -442,16 +429,14 @@ export class RoseChart {
         continue;
       }
       const indexCurrent = this.quadrants[index][i].index;
-      if (this.option.polyline) {
-        if (index === 1) {
-          itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
-          ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 + this.polylineWidth},
-          ${itemCurrent.indicatorPointY2}`;
-        } else if (index === 3) {
-          itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
-         ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 - this.polylineWidth},
-         ${itemCurrent.indicatorPointY2}`;
-        }
+      if (index === 1) {
+        itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
+        ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 + this.polylineWidth},
+        ${itemCurrent.indicatorPointY2}`;
+      } else if (index === 3) {
+        itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
+       ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 - this.polylineWidth},
+       ${itemCurrent.indicatorPointY2}`;
       }
       if (i > 0) {
         const itemNext = this.quadrants[index][i - 1].item;
@@ -471,16 +456,14 @@ export class RoseChart {
         continue;
       }
       const indexCurrent = this.quadrants[index][i].index;
-      if (this.option.polyline) {
-        if (index === 2) {
-          itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
-         ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 + this.polylineWidth},
-         ${itemCurrent.indicatorPointY2}`;
-        } else if (index === 4) {
-          itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
-         ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 - this.polylineWidth},
-         ${itemCurrent.indicatorPointY2}`;
-        }
+      if (index === 2) {
+        itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
+       ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 + this.polylineWidth},
+       ${itemCurrent.indicatorPointY2}`;
+      } else if (index === 4) {
+        itemCurrent.points = `${itemCurrent.indicatorPointX1},${itemCurrent.indicatorPointY1}
+       ${itemCurrent.indicatorPointX2},${itemCurrent.indicatorPointY2} ${itemCurrent.indicatorPointX2 - this.polylineWidth},
+       ${itemCurrent.indicatorPointY2}`;
       }
 
       if (i < len - 1) {
@@ -642,7 +625,6 @@ export class RoseChart {
     }
     if (this.currentSelected !== -1) {
       this.handleFadeOut();
-      this.drawHtml();
       this.currentSelected = -1;
     }
   }
@@ -751,7 +733,6 @@ export class RoseChart {
     if (this.currentSelected === index) {
       return;
     }
-    console.log(9999)
     let i = item.radius;
     let step = 1;
     let r = 0;
