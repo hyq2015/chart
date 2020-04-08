@@ -309,9 +309,7 @@ export class RoseChart {
           rightVal = rightVal === 'auto' ? 'auto' : rightVal as number + this.polylineWidth;
           leftVal = leftVal === 'auto' ? 'auto' : leftVal as number + this.polylineWidth;
         }
-        if (this.option.boost) {
-          topVal += this.defaultOffsetY;
-        }
+        topVal += this.defaultOffsetY;
         if (this.tooltips.length !== this.prodOption.series.length) {
           const tooltipDiv = document.createElement('div');
           tooltipDiv.className = `rose-chart-tooltip ${this.option.tooltipClass || ''}`;
@@ -455,14 +453,12 @@ export class RoseChart {
          ${itemCurrent.indicatorPointY2}`;
         }
       }
-      if (this.option.boost) {
-        if (i > 0) {
-          const itemNext = this.quadrants[index][i - 1].item;
-          if (itemNext.bottom > itemCurrent.top && index === 1) {
-            this.handleNewParam(itemCurrent, itemNext, index);
-          } else if (itemCurrent.bottom > itemNext.top && index === 3) {
-            this.handleNewParam(itemCurrent, itemNext, index);
-          }
+      if (i > 0) {
+        const itemNext = this.quadrants[index][i - 1].item;
+        if (itemNext.bottom > itemCurrent.top && index === 1) {
+          this.handleNewParam(itemCurrent, itemNext, index);
+        } else if (itemCurrent.bottom > itemNext.top && index === 3) {
+          this.handleNewParam(itemCurrent, itemNext, index);
         }
       }
       this.setStyle(indexCurrent, itemCurrent);
@@ -487,14 +483,12 @@ export class RoseChart {
         }
       }
 
-      if (this.option.boost) {
-        if (i < len - 1) {
-          const itemNext = this.quadrants[index][i + 1].item;
-          if (itemNext.top < itemCurrent.bottom && index === 2) {
-            this.handleNewParam(itemCurrent, itemNext, index);
-          } else if (itemNext.bottom > itemCurrent.top && index === 4) {
-            this.handleNewParam(itemCurrent, itemNext, index);
-          }
+      if (i < len - 1) {
+        const itemNext = this.quadrants[index][i + 1].item;
+        if (itemNext.top < itemCurrent.bottom && index === 2) {
+          this.handleNewParam(itemCurrent, itemNext, index);
+        } else if (itemNext.bottom > itemCurrent.top && index === 4) {
+          this.handleNewParam(itemCurrent, itemNext, index);
         }
       }
       this.setStyle(indexCurrent, itemCurrent);
