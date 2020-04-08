@@ -22,13 +22,10 @@ export class RoseChart {
   private centerY: number;
   private radiusGap: number;
   private minRadius: number;
-  private inCircle: boolean;
   private hoverScale: number;
   private animationStep = 0.6;
-  private devicePixelRatio = 1;
   private currentSelected = -1;
   private series: ProdSerial[];
-  private can: HTMLCanvasElement;
   private svg: any;
   private pathList: HTMLElement[] = [];
   private parentDom: HTMLElement;
@@ -36,13 +33,11 @@ export class RoseChart {
   private containerDom: HTMLElement;
   private pen: CanvasRenderingContext2D;
   private maxRadius: number | undefined;
-  private activeItem: SerialAndIndex;
   private currentSvg: HTMLElement;
   private prevSvg: HTMLElement;
   private defaultOffset = false;
   public prodOption: ProdChartOption;
   public option: ChartOption;
-  private renderMode = 'svg';
   private linkNs = 'http://www.w3.org/1999/xlink';
   private svgOrg = 'http://www.w3.org/2000/svg';
   private tooltips: HTMLElement[] = [];
@@ -86,9 +81,6 @@ export class RoseChart {
     }
     if (this.prodOption.hasOwnProperty('defaultOffset')) {
       this.defaultOffset = this.prodOption.defaultOffset;
-    }
-    if (this.prodOption.renderMode) {
-      this.renderMode = this.prodOption.renderMode;
     }
     if (!this.parentDom) {
       this.parentDom = document.getElementById(this.prodOption.id);
@@ -232,66 +224,32 @@ export class RoseChart {
     fadeIn?: boolean,
     isSvg?: boolean
   ) {
-    if (this.renderMode === 'canvas') {
-      if (!this.isInit && this.hoverScale > 1) {
-        this.drawHtml();
-      }
-      this.pen.beginPath();
-      this.pen.fillStyle = drawEntity.color;
-      if (fadeIn && drawEntity.highLightColor && this.hoverScale === 1) {
-        this.pen.fillStyle = drawEntity.highLightColor;
-      }
-      this.pen.moveTo(this.centerX, this.centerY);
-      this.pen.arc(
-        this.centerX,
-        this.centerY,
-        drawEntity.radius,
-        drawEntity.startAngle,
-        drawEntity.endAngle
-      );
-      this.pen.fill();
-      this.pen.closePath();
-      this.pen.save();
-    } else if (this.renderMode === 'svg') {
-      if (this.hoverScale > 1) {
-        const params = this.calculateParams(drawEntity);
-        const largeArcFlag = drawEntity.angleScope < Math.PI ? 0 : 1;
-        if (isSvg) {
-          this.prevSvg.setAttribute(
-            'd',
-            `M ${params.centerX} ${params.centerY}
-    L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`
-          );
-        } else {
-          this.currentSvg.setAttribute(
-            'd',
-            `M ${params.centerX} ${params.centerY}
-    L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`
-          );
-        }
+    if (this.hoverScale > 1) {
+      const params = this.calculateParams(drawEntity);
+      const largeArcFlag = drawEntity.angleScope < Math.PI ? 0 : 1;
+      if (isSvg) {
+        this.prevSvg.setAttribute(
+          'd',
+          `M ${params.centerX} ${params.centerY}
+  L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`
+        );
       } else {
-        if (isSvg) {
-          this.prevSvg.style.fill = drawEntity.color;
-        } else if (this.hoverScale === 1) {
-          this.currentSvg.style.fill = drawEntity.highLightColor;
-        }
+        this.currentSvg.setAttribute(
+          'd',
+          `M ${params.centerX} ${params.centerY}
+  L ${params.x} ${params.y} A ${params.radius} ${params.radius} 0 ${largeArcFlag} 1 ${params.x1} ${params.y1}`
+        );
+      }
+    } else {
+      if (isSvg) {
+        this.prevSvg.style.fill = drawEntity.color;
+      } else if (this.hoverScale === 1) {
+        this.currentSvg.style.fill = drawEntity.highLightColor;
       }
     }
   }
   drawMask() {
-    if (this.renderMode === 'canvas') {
-      this.draw(
-        {
-          color: '#fff',
-          highLightColor: '#fff',
-          startAngle: 0,
-          endAngle: Math.PI * 2,
-          radius: this.minRadius,
-          value: 100
-        },
-        true
-      );
-    }
+
   }
   drawHtml() {
     if (this.prodOption.circleTxt) {
@@ -312,14 +270,12 @@ export class RoseChart {
       if (item.indicateTxt && item.showIndicate) {
         const points = `${item.indicatorPointX1},${item.indicatorPointY1} ${item.indicatorPointX2},${item.indicatorPointY2}`;
         item.points = points;
-        if (this.renderMode === 'svg') {
-          const polyline = this.createSvgEl('polyline', {
-            points: points,
-            style: `stroke:${item.color};fill:none;`
-          });
-          this.svgLine.push(polyline);
-          this.svg.appendChild(polyline);
-        }
+        const polyline = this.createSvgEl('polyline', {
+          points: points,
+          style: `stroke:${item.color};fill:none;`
+        });
+        this.svgLine.push(polyline);
+        this.svg.appendChild(polyline);
         let topVal = item.indicatorPointY2;
         let leftVal: number | string = 'auto';
         let rightVal: number | string = 'auto';
@@ -460,11 +416,7 @@ export class RoseChart {
     itemNext.points = points;
   }
   setStyle(indexCurrent: number, itemCurrent: any) {
-    if (this.renderMode === 'svg') {
-      this.svgLine[indexCurrent].setAttribute('points', itemCurrent.points);
-    } else {
-      this.drawPoints(itemCurrent.points, itemCurrent.color);
-    }
+    this.svgLine[indexCurrent].setAttribute('points', itemCurrent.points);
     this.tooltips[indexCurrent].style.cssText += `left:${itemCurrent.left + (itemCurrent.indicateOffsetX || 0)}px;
     top:${itemCurrent.top + (itemCurrent.indicateOffsetY || 0)}px;`;
   }
@@ -549,29 +501,7 @@ export class RoseChart {
     }
   }
   initDraw() {
-    if (this.renderMode === 'canvas') {
-      this.can = document.createElement('canvas');
-      this.can.style.cssText += `width:${this.width}px;height:${this.height}px;`;
-      this.can.width = this.width;
-      this.can.height = this.height;
-      this.pen = this.can.getContext('2d');
-      this.containerDom.appendChild(this.can);
-      this.parentDom.appendChild(this.containerDom);
-      if (window.devicePixelRatio) {
-        const ratio = window.devicePixelRatio;
-        this.devicePixelRatio = ratio;
-        this.can.height = this.height * ratio;
-        this.can.width = this.width * ratio;
-        this.pen.scale(ratio, ratio);
-      }
-      this.pen.clearRect(0, 0, this.width, this.height);
-      for (const item of this.series) {
-        this.draw(item);
-      }
-      this.drawMask();
-    } else if (this.renderMode === 'svg') {
-      this.drawSvg();
-    }
+    this.drawSvg();
   }
   createSvgEl(tag: string, attrs: any): any {
     const ATTR_MAP = {
@@ -648,19 +578,11 @@ export class RoseChart {
   }
   addMoveHandler() {
     if (this.isInit) {
-      if (this.renderMode === 'canvas') {
-        this.containerDom.addEventListener(
-          'mousemove',
-          this.mouseMoveHandler.bind(this),
-          false
-        );
-      } else if (this.renderMode === 'svg') {
-        this.containerDom.addEventListener(
-          'mousemove',
-          this.mouseMoveHandler.bind(this),
-          false
-        );
-      }
+      this.containerDom.addEventListener(
+        'mousemove',
+        this.mouseMoveHandler.bind(this),
+        false
+      );
       this.hoverScale = this.prodOption.hoverScale
         ? this.prodOption.hoverScale < 1
           ? 1
@@ -670,19 +592,11 @@ export class RoseChart {
         this.prodOption.triggerType &&
         this.prodOption.triggerType === 'click'
       ) {
-        if (this.renderMode === 'canvas') {
-          this.containerDom.addEventListener(
-            'click',
-            this.clickOrMouseoverHandler.bind(this),
-            false
-          );
-        } else if (this.renderMode === 'svg') {
-          this.containerDom.addEventListener(
-            'click',
-            this.clickOrMouseoverHandler.bind(this),
-            false
-          );
-        }
+        this.containerDom.addEventListener(
+          'click',
+          this.clickOrMouseoverHandler.bind(this),
+          false
+        );
       }
     }
   }
@@ -716,19 +630,6 @@ export class RoseChart {
     }
   }
   mouseMoveHandler(e: MouseEvent): void {
-    if (this.renderMode === 'canvas') {
-      const x = e.clientX - this.can.getBoundingClientRect().left;
-      const y = e.clientY - this.can.getBoundingClientRect().top;
-      const result = this.isInPath(x, y);
-      if (result) {
-        this.inCircle = true;
-        this.activeItem = result;
-        this.can.style.cursor = 'pointer';
-      } else {
-        this.can.style.cursor = 'default';
-        this.inCircle = false;
-      }
-    }
     if (
       this.prodOption.triggerType &&
       this.prodOption.triggerType === 'hover'
@@ -737,20 +638,13 @@ export class RoseChart {
     }
   }
   clickOrMouseoverHandler(e: MouseEvent): void {
-    if (this.renderMode === 'canvas') {
-      if (this.inCircle) {
-        this.handleMoveIn(this.activeItem.item, this.activeItem.index);
-        return;
-      }
-    } else if (this.renderMode === 'svg') {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'path') {
-        const index = target.getAttribute('data-index');
-        const activePath: ProdSerial = this.series[index];
-        this.currentSvg = target;
-        this.handleMoveIn(activePath, parseInt(index, 10));
-        return;
-      }
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'path') {
+      const index = target.getAttribute('data-index');
+      const activePath: ProdSerial = this.series[index];
+      this.currentSvg = target;
+      this.handleMoveIn(activePath, parseInt(index, 10));
+      return;
     }
     if (this.currentSelected !== -1) {
       this.handleFadeOut();
@@ -841,22 +735,15 @@ export class RoseChart {
             this.currentSelected,
             true
           );
-          this.drawMask();
           if (maxR <= prevSelected.radius) {
             this.drawOnce(prevSelected, this.currentSelected, true);
-            this.drawMask();
           }
           requestId = requestAnimationFrame(renderOut.bind(this));
           this.animationOut.push(requestId);
         }
       } else {
-        if (this.renderMode === 'svg') {
-          this.prevSvg = this.pathList[this.currentSelected];
-          this.draw(prevSelected, false, false, true);
-        } else if (this.renderMode === 'canvas') {
-          this.drawOnce(prevSelected, this.currentSelected);
-        }
-        this.drawMask();
+        this.prevSvg = this.pathList[this.currentSelected];
+        this.draw(prevSelected, false, false, true);
       }
     }
     renderOut.call(this);
@@ -870,6 +757,7 @@ export class RoseChart {
     if (this.currentSelected === index) {
       return;
     }
+    console.log(9999)
     let i = item.radius;
     let step = 1;
     let r = 0;
@@ -905,7 +793,6 @@ export class RoseChart {
             true
           );
         }
-        this.drawMask();
         if (i >= item.radius * this.hoverScale) {
           this.drawOnce(
             Object.assign({}, item, { radius: item.radius * this.hoverScale }),
@@ -915,7 +802,6 @@ export class RoseChart {
           if (prevSelected) {
             this.draw(prevSelected, false, true, true);
           }
-          this.drawMask();
         }
         requestId = requestAnimationFrame(render.bind(this));
         this.animations.push(requestId);
@@ -925,7 +811,6 @@ export class RoseChart {
         if (prevSelected) {
           this.draw(prevSelected, false, false, true);
         }
-        this.drawMask();
         this.drawHtml();
       }
     }
@@ -933,15 +818,6 @@ export class RoseChart {
     this.currentSelected = index;
   }
   drawOnce(item: ProdSerial, index: number, fadeIn?: boolean): void {
-    if (this.renderMode === 'canvas') {
-      this.pen.clearRect(0, 0, this.width, this.height);
-      for (let a = 0, l = this.series.length; a < l; a++) {
-        if (a !== index && a !== this.currentSelected) {
-          const item1 = this.series[a];
-          this.draw(item1, false);
-        }
-      }
-    }
     this.draw(item, false, fadeIn);
   }
   velocityCurve(x: number, a: number): number {
