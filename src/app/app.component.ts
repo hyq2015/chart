@@ -245,13 +245,64 @@ export class AppComponent  implements OnInit , AfterViewInit{
   };
   rose: RoseChart;
   rose4: RoseChart;
+  svg: any;
+  private linkNs = 'http://www.w3.org/1999/xlink';
+  private svgOrg = 'http://www.w3.org/2000/svg';
   constructor() {}
   ngOnInit(): void {
-    this.rose = new RoseChart(this.option);
-    this.rose4 = new RoseChart(this.option4);
-    this.rose.init();
-    this.rose4.init();
+    // this.rose = new RoseChart(this.option);
+    // this.rose4 = new RoseChart(this.option4);
+    // this.rose.init();
+    // this.rose4.init();
+  }
+  createSvgEl(tag: string, attrs: any): any {
+    const ATTR_MAP = {
+      className: 'class',
+      svgHref: 'href'
+    };
+
+    const NS_MAP = {
+      svgHref: this.linkNs
+    };
+    const d = document.createElementNS(this.svgOrg, tag);
+    Object.keys(attrs).forEach(attr => {
+      const attName = attr in ATTR_MAP ? ATTR_MAP[attr] : attr;
+      const val = attrs[attr];
+      if (attr in NS_MAP) {
+        d.setAttributeNS(NS_MAP[attr], attName, val);
+      } else {
+        d.setAttribute(attName, val);
+      }
+    });
+    return d;
   }
   ngAfterViewInit(): void {
+    this.svg = document.querySelector('#svgContainer');
+    for (let i = 0; i < 10; i++) {
+      const polyline = this.createSvgEl('polyline', {
+        points: `${(i + 1) * 100},360 ${(i + 1) * 100},350`,
+        stroke: '#000'
+      });
+      const text = this.createSvgEl('text', {
+        x: (i + 1) * 100 - 15,
+        y: 380
+      });
+      text.innerHTML = (i + 1) * 100;
+      this.svg.appendChild(polyline);
+      this.svg.appendChild(text);
+    }
+    for (let i = 0; i < 4; i++) {
+      const polyline = this.createSvgEl('polyline', {
+        points: `60 ${(4 - i) * 90},50 ${(4 - i) * 90}`,
+        stroke: '#000'
+      });
+      const text = this.createSvgEl('text', {
+        x: (i + 1) * 100 - 15,
+        y: 380
+      });
+      text.innerHTML = (i + 1) * 100;
+      this.svg.appendChild(polyline);
+      this.svg.appendChild(text);
+    }
   }
 }
