@@ -1,6 +1,6 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {RoseChart} from '../../projects/my-lib/src/lib/chart/chart';
-import {ChartOption, ProdSerial} from '../../projects/my-lib/src/lib/chart/chart.interface';
+import {ChartOption} from '../../projects/my-lib/src/lib/chart/chart.interface';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -31,7 +31,7 @@ export class AppComponent  implements OnInit , AfterViewInit{
     defaultOffset: false,
     polyline: true,
     triggerType: 'hover',
-    hoverScale: 1.1,
+    // hoverScale: 1.1,
     series: [
       {
         color: '#00a758',
@@ -250,10 +250,15 @@ export class AppComponent  implements OnInit , AfterViewInit{
   private svgOrg = 'http://www.w3.org/2000/svg';
   constructor() {}
   ngOnInit(): void {
-    // this.rose = new RoseChart(this.option);
+    this.rose = new RoseChart(this.option4);
     // this.rose4 = new RoseChart(this.option4);
     // this.rose.init();
+    console.log(this.option4);
     // this.rose4.init();
+  }
+  changeSty() {
+    this.option4.series.splice(2, this.option4.series.length - 5);
+    this.rose.update(this.option4);
   }
   createSvgEl(tag: string, attrs: any): any {
     const ATTR_MAP = {

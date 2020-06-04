@@ -1,11 +1,7 @@
 import {
   ChartOption,
-  DoublePoint,
-  Point,
   ProdChartOption,
   ProdSerial,
-  SerialAndIndex,
-  XPoint
 } from './chart.interface';
 const defaultSerialConfig = {
   showIndicate: true,
@@ -57,6 +53,7 @@ export class RoseChart {
   };
   constructor(opt: ChartOption) {
     this.option = opt;
+    this.init();
   }
 
   init() {
@@ -628,67 +625,6 @@ export class RoseChart {
       this.currentSelected = -1;
     }
   }
-  getDistance(x1: number, x2: number, y1: number, y2: number): number {
-    return Math.sqrt(
-      Math.pow(Math.abs(x1 - x2), 2) + Math.pow(Math.abs(y1 - y2), 2)
-    );
-  }
-  getClosePoint(
-    x: number,
-    y: number,
-    obj: { x1: number; x2: number; y1: number; y2: number }
-  ): Point {
-    const dis1 = Math.sqrt(
-      Math.pow(Math.abs(obj.x1 - x), 2) + Math.pow(Math.abs(obj.y1 - y), 2)
-    );
-    const dis2 = Math.sqrt(
-      Math.pow(Math.abs(obj.x2 - x), 2) + Math.pow(Math.abs(obj.y2 - y), 2)
-    );
-    return dis1 >= dis2 ? { x: obj.x2, y: obj.y2 } : { x: obj.x1, y: obj.y1 };
-  }
-  isInPath(x: number, y: number): SerialAndIndex {
-    const centerX = this.centerX;
-    const centerY = this.centerY;
-    const distance = this.getDistance(centerX, x, centerY, y);
-    if (distance >= this.minRadius && distance <= this.maxRadius) {
-      if (this.series.length > 1) {
-        const point = this.getClosePoint(
-          x,
-          y,
-          this.lineEquation(this.centerX, this.centerY, x, y)
-        );
-        let negativeSymbol = 1;
-        if (point.y < this.centerY) {
-          negativeSymbol = -1;
-        }
-        const angle =
-          negativeSymbol * Math.acos((point.x - this.centerX) / this.minRadius);
-        for (let i = 0, len = this.series.length; i < len; i++) {
-          const item = this.series[i];
-          if (
-            ((item.startAngle >= 0 && item.endAngle >= 0) ||
-              (item.startAngle <= 0 && item.endAngle <= 0)) &&
-            item.angleScope <= Math.PI && angle >= item.startAngle && angle <= item.endAngle
-          ) {
-              return { item, index: i };
-          } else if (item.startAngle <= 0 && item.endAngle >= 0 && angle >= item.startAngle && angle <= item.endAngle) {
-              return { item, index: i };
-          } else if (item.startAngle >= 0 && item.endAngle <= 0 && ((angle <= 0 && angle <= item.endAngle)
-            || (angle >= 0 && angle >= item.startAngle))) {
-              return { item, index: i };
-          } else if (
-            ((item.startAngle <= 0 && item.endAngle <= 0) ||
-              (item.startAngle >= 0 && item.endAngle >= 0)) &&
-            item.angleScope >= (Math.PI * 3) / 2 && (!(item.endAngle <= angle && item.startAngle >= angle))
-          ) {
-              return { item, index: i };
-          }
-        }
-      } else {
-        return { item: this.series[0], index: 0 };
-      }
-    }
-  }
   handleFadeOut(): void {
     const prevSelected = this.series[this.currentSelected];
     const r = prevSelected.radius;
@@ -799,70 +735,5 @@ export class RoseChart {
     // return Math.pow(x, 3);
     return Math.atan(x);
     // return 8 * Math.pow(a, 3) / (Math.pow(x, 2) + 4 * Math.pow(a, 2));
-  }
-  /**
-   * line equation
-   *  y1 = kx1 + b
-   *  y2 = kx2 + b
-   *  => k = (y1 - y2) / (x1 - x2);
-   *  => b = y1 - kx1;
-   */
-  lineEquation(x1: number, y1: number, x2: number, y2: number): DoublePoint {
-    // consider vertical scenario
-    if (x1 !== x2) {
-      const k = (y1 - y2) / (x1 - x2);
-      const b = y1 - k * x1;
-      return this.intersectionOfLineAndCircle(
-        this.centerX,
-        this.centerY,
-        this.minRadius,
-        k,
-        b
-      );
-    } else {
-      return {
-        x1,
-        y1: this.centerY + this.minRadius,
-        x2: x1,
-        y2: this.centerY - this.minRadius
-      };
-    }
-  }
-
-  /**
-   * circle equation
-   * (x - o1) ^ 2 + (y - o2) ^ 2 = r ^ 2
-   */
-  intersectionOfLineAndCircle(
-    o1: number,
-    o2: number,
-    r: number,
-    k: number,
-    b: number
-  ): DoublePoint {
-    const result = this.twoPowerEquationResult(
-      1 + Math.pow(k, 2),
-      2 * (k * b - o1 - k * o2),
-      Math.pow(o1, 2) +
-        Math.pow(b, 2) +
-        Math.pow(o2, 2) -
-        Math.pow(r, 2) -
-        2 * b * o2
-    );
-    const x1 = result.x1;
-    const x2 = result.x2;
-    const y1 = k * x1 + b;
-    const y2 = k * x2 + b;
-    return { x1, x2, y1, y2 };
-  }
-
-  /**
-   * x1 = (-b+Math.sqrt(b^2-4ac))/2*a
-   * x2 = (-b-Math.sqrt(b^2-4ac))/2*a
-   */
-  twoPowerEquationResult(a: number, b: number, c: number): XPoint {
-    const x1 = (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
-    const x2 = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
-    return { x1, x2 };
   }
 }
